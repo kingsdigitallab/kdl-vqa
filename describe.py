@@ -1,12 +1,15 @@
+# std lib
 import sys
-sys.path.insert(0, '../..')
 import json
-from questions import questions
-from pathlib import Path
+import argparse
 import datetime, time
-from helpers import Timer, get_image_paths
-from tqdm import tqdm
+from pathlib import Path
+# this app
+from questions import questions
 from describer.base import ImageDescriber
+from utils.helpers import Timer, get_image_paths
+# third-party
+from tqdm import tqdm
 
 # CUDA_VISIBLE_DEVICES='' python [...] # to force CPU
 # CUDA_VISIBLE_DEVICES=1 python [...] # to force 2nd GPU
@@ -17,13 +20,14 @@ from describer.base import ImageDescriber
 # srun -p gpu -c 4 --mem 8192 --gpus-per-task 1 --constraint a100 -n 1 python describe.py -f 99945 -r
 # srun -p interruptible_gpu -c 4 --mem 8192 --gpus-per-task 1 --constraint a40 -n 2 -t 2-0:00  python describe.py
 
-PURPOSE = 'Describe visual aspects of the video frames by asking questions to a VLM.'
-IN_PATH = '../../../data/rds2/STiC/PoC_2024/data/source/videos'
-OUT_PATH = '../../../data/etl/descriptions'
-LOG_PATH = 'describe.log'
-DUMMY_DESCRIPTIONS = 0
 VERSION = '0.1.0'
-IMAGE_LOCK_TIMEOUT_IN_SECONDS = 2 * 60
+# TODO: use a 'dummy' model
+DUMMY_DESCRIPTIONS = 0
+
+DESCRIBE_PATH_IMAGES = '../../../data/rds2/STiC/PoC_2024/data/source/videos'
+DESCRIBE_PATH_ANSWERS = '../../../data/etl/descriptions'
+DESCRIBE_PATH_LOG = f'{DESCRIBE_PATH_ANSWERS.rstrip('/')}/describe.log'
+DESCRIBE_IMAGE_LOCK_TIMEOUT_IN_SECONDS = 2 * 60
 
 class FrameQuestionAnswers():
 
@@ -42,18 +46,18 @@ class FrameQuestionAnswers():
         self.timer = Timer(LOG_PATH)
         self.describer.set_timer(self.timer)
 
-        Path(OUT_PATH).mkdir(parents=True, exist_ok=True)
+        Path(DESCRIBE_PATH_ANSWERS).mkdir(parents=True, exist_ok=True)
 
     def process_command_line(self):
-        import argparse
-
         parser = argparse.ArgumentParser()
-        parser.add_argument('-f', '--filter', help='Filter frame path by a string, e.g. batman')
+        parser.add_argument('-f', '--filter', help='Filter image path by a string, e.g. batman')
         parser.add_argument('-m', '--model', help='Name of the model to describe the images.', default='moondream')
         parser.add_argument('-q', '--questions', nargs='*', help='Only submit the questions with the given keys.')
         parser.add_argument('-o', '--optimise', action='store_true', help='Use model optimisations, if any (e.g. flash attention). Need higher specs.')
         parser.add_argument('-r', '--redo', action='store_true', help='Always submit questions again. Disregard cache.')
         parser.add_argument('--max-images', dest='max_images', type=int, default=0, help='Number of images to describe.')
+        parser.add_argument('-R', '--root', help='Path to a data folder.')
+        parser.add_argument('-s', '--settings', help='Path to a settings file.')
         parser.add_argument('-v', '--verbose', action='store_true', help='Enable verbose mode')
         self.args = parser.parse_args()
 
@@ -74,10 +78,10 @@ class FrameQuestionAnswers():
 
         i = 0
 
-        image_paths = get_image_paths(self.filter)
+        image_paths = get_image_paths(self.config['PATH_IMAGES'], self.filter)
 
         for image_path in (pbar := tqdm(image_paths)):
-            qas_path = Path(OUT_PATH) / f'{image_path.name}_{image_path.stat().st_size}.qas.json'
+            qas_path = Path(DESCRIBE_PATH_ANSWERS) / f'{image_path.name}_{image_path.stat().st_size}.qas.json'
 
             # pbar.set_postfix_str(qas_path.name)
 
@@ -120,7 +124,7 @@ class FrameQuestionAnswers():
         model_name = self.describer.get_name()
         ret = None
 
-        qas_path = Path(OUT_PATH) / f'{image_path.name}_{image_path.stat().st_size}.qas.json'
+        qas_path = Path(DESCRIBE_PATH_ANSWERS) / f'{image_path.name}_{image_path.stat().st_size}.qas.json'
 
         if qas_path.exists():
             ret = self.read_json_safe(qas_path)
@@ -157,7 +161,7 @@ class FrameQuestionAnswers():
 
         if ret:
             now = time.time()
-            if now - ret['meta']['started'] < IMAGE_LOCK_TIMEOUT_IN_SECONDS:
+            if now - ret['meta']['started'] < DESCRIBE_IMAGE_LOCK_TIMEOUT_IN_SECONDS:
                 print('WARNING: image is already locked.')
             else:
                 questions_to_ask = {}

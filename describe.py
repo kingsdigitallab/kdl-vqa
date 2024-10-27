@@ -5,7 +5,7 @@ import argparse
 import datetime, time
 from pathlib import Path
 # this app
-from questions import questions
+# from questions import questions
 from describer.base import ImageDescriber
 from utils.helpers import Timer, get_image_paths
 # third-party
@@ -24,9 +24,10 @@ VERSION = '0.1.0'
 # TODO: use a 'dummy' model
 DUMMY_DESCRIPTIONS = 0
 
-DESCRIBE_PATH_IMAGES = '../../../data/rds2/STiC/PoC_2024/data/source/videos'
-DESCRIBE_PATH_ANSWERS = '../../../data/etl/descriptions'
-DESCRIBE_PATH_LOG = f'{DESCRIBE_PATH_ANSWERS.rstrip('/')}/describe.log'
+DESCRIBE_PATH_IMAGES = 'test/data/images'
+DESCRIBE_PATH_ANSWERS = 'test/data/answers'
+DESCRIBE_PATH_QUESTIONS = 'test/data/questions.json'
+DESCRIBE_PATH_LOG = 'test/data/describe.log'
 DESCRIBE_IMAGE_LOCK_TIMEOUT_IN_SECONDS = 2 * 60
 
 class FrameQuestionAnswers():
@@ -43,20 +44,32 @@ class FrameQuestionAnswers():
         self.optimise = optimise
         self.describer = ImageDescriber.new(model_name)
         self.describer.set_optimisation(self.optimise)
-        self.timer = Timer(LOG_PATH)
+        self.timer = Timer(DESCRIBE_PATH_LOG)
         self.describer.set_timer(self.timer)
 
         Path(DESCRIBE_PATH_ANSWERS).mkdir(parents=True, exist_ok=True)
 
     def process_command_line(self):
-        parser = argparse.ArgumentParser()
+        actions = self._get_actions_info()
+        epilog = 'Action:\n'
+        for name, info in actions.items():
+            epilog += f'  {name}:\n    {info['description']}\n'
+
+        parser = argparse.ArgumentParser(
+            formatter_class=argparse.RawDescriptionHelpFormatter,
+            epilog=epilog,
+            description='Batch visual question answering.'
+        )
+        parser.add_argument("action", help="action to perform", choices=actions.keys())
         parser.add_argument('-f', '--filter', help='Filter image path by a string, e.g. batman')
-        parser.add_argument('-m', '--model', help='Name of the model to describe the images.', default='moondream')
         parser.add_argument('-q', '--questions', nargs='*', help='Only submit the questions with the given keys.')
+        parser.add_argument('-m', '--model', help='Name of the model to describe the images.', default='moondream')
         parser.add_argument('-o', '--optimise', action='store_true', help='Use model optimisations, if any (e.g. flash attention). Need higher specs.')
         parser.add_argument('-r', '--redo', action='store_true', help='Always submit questions again. Disregard cache.')
         parser.add_argument('--max-images', dest='max_images', type=int, default=0, help='Number of images to describe.')
+        # todo
         parser.add_argument('-R', '--root', help='Path to a data folder.')
+        # todo
         parser.add_argument('-s', '--settings', help='Path to a settings file.')
         parser.add_argument('-v', '--verbose', action='store_true', help='Enable verbose mode')
         self.args = parser.parse_args()
@@ -70,15 +83,31 @@ class FrameQuestionAnswers():
             optimise=self.args.optimise,
         )
 
-        self.describe_images()
+        action = actions.get(self.args.action, None)
+        if action:
+            action['method']()
 
-    def describe_images(self):
+    def _get_actions_info(self):
+        ret = {}
+        for k in dir(self):
+            if k.startswith('action_'):
+                name = k[7:]
+                method = getattr(self, k)
+                description = (method.__doc__ or '').split('\n')[0]
+                ret[name] = {
+                    'method': method,
+                    'description': description
+                }
+        return ret
+
+    def action_describe(self):
+        '''Submit questions about multiple images to a visual model & save answers.'''
         self.timer.step('=' * 40)
         self.timer.step(f'-m {self.describer.get_name()} -f {self.filter}')
 
         i = 0
 
-        image_paths = get_image_paths(self.config['PATH_IMAGES'], self.filter)
+        image_paths = get_image_paths(DESCRIBE_PATH_IMAGES, self.filter)
 
         for image_path in (pbar := tqdm(image_paths)):
             qas_path = Path(DESCRIBE_PATH_ANSWERS) / f'{image_path.name}_{image_path.stat().st_size}.qas.json'
@@ -165,10 +194,10 @@ class FrameQuestionAnswers():
                 print('WARNING: image is already locked.')
             else:
                 questions_to_ask = {}
-                for question_key in questions.keys():
+                questions = self.read_questions()
+                for question_key, question in questions.items():
                     if self.question_keys and question_key not in self.question_keys:
                         continue
-                    question = questions[question_key]
                     if question:
                         question_hash = self.get_hash_from_question(question)
                         if self.redo or question_key not in ret['questions'] or ret['questions'][question_key]['hash'] != question_hash:
@@ -199,6 +228,9 @@ class FrameQuestionAnswers():
 
         return ret
 
+    def read_questions(self):
+        return json.loads(Path(DESCRIBE_PATH_QUESTIONS).read_text())
+    
     def get_hash_from_question(self, question):
         # hashlib.md5()
         # base64.b64encode()

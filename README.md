@@ -12,12 +12,11 @@ Purpose: Ask a series of questions to visual language about a collection of imag
 * designed to work with different vision language models
   * which also allows to compare/benchmark different models
 * granual caching: only ask question again if prompt or model has changed
-* can select a different model for each question
 * [coming soon] export answers to HTML for manual review
 
 ## Requirements & set up
 
-GPU will speed up processing but is optional. 
+GPU will speed up processing but is optional.
 
 * [Install `poetry`](https://python-poetry.org/docs/#installing-with-pipx).
 * cd into this folder
@@ -30,7 +29,7 @@ Currently, this is [moondream2](https://github.com/vikhyat/moondream) because it
 ## Input
 
 * Images (1920x1080): currently the images under the sample folder.
-* Questions: in `questions.py` 
+* Questions: in `questions.json` 
 
 ## Output
 

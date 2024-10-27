@@ -1,0 +1,9 @@
+wheel
+git+https://github.com/huggingface/transformers
+qwen-vl-utils
+torch
+torchvision
+accelerate
+optimum
+git+https://github.com/huggingface/transformers
+auto-gptq

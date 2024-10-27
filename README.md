@@ -1,7 +1,10 @@
 # kdl-vqa
-Python tool for batch visual question answering.
 
-Purpose: Ask a series of questions to visual language about a collection of images.
+**Batch visual question answering.**
+
+This python command line tool lets you ask a series of questions 
+to a visual language model about a collection of images.
+It saves the answers in json files (one file per image).
 
 ## Features
 
@@ -23,20 +26,27 @@ Currently, this is [moondream2](https://github.com/vikhyat/moondream) because it
 
 Although a GPU is not mandatory for the moondream model, processing will be very slow without it.
 
-## Input
+## Usage
 
-* Images (1920x1080): currently the images under the sample folder.
-* Questions: in `questions.json` 
+By default the root folder for all the input and output is /data.
 
-## Output
+### Prepare your input
 
-* A JSON file for each frame, with the responses for the model;
+* **/data/images**: copy your input images (*.jpg) anywhere under that folder
+* **/data/questions.json**: your questions (see example in /test/data/questions.json)
 
-(Temporarily disabled: a HTML file with all frames and answers)
+### Generate descriptions
 
-## Models
+`python vqa describe`
 
-### Moondream2
+### Output
+
+* **/data/answers/**: contains the generated answers. Each json file contains all the answers for an image
+* **/data/describe.log**: a log of the processing for monitoring and performance purpose
+
+## Supported models
+
+### moondream
 
 * Moondream2 (1.87b) [SUPPORTED]: default model, decent responses for general questions, quite fast, even on CPU. Speed: ~9s/question/image on i9 CPU. ~1.7s/q/i on 1080ti (~5x faster; 72s for 2 img x 21 qst). Deterministic. 
 * llava-next [TODO]: 0.5b needs access to gated llama-3-8b model on HF
@@ -45,12 +55,7 @@ Although a GPU is not mandatory for the moondream model, processing will be very
 * HuggingFaceM4/Idefics3-8B-Llama3 [MAYBE]: Requires ~24GB VRAM.
 * Qwen2-VL-2B-Instruct-GPTQ-Int4 (1.07B) [TRIED]: Tried the int4 ~5 x slower than MD by default. With higher mem consumption. Does NOT run on CPU. Harder to install dependencies.
 
-### Qwen-VL
+### qwen-vl
 
 [TODO]
 
-## Optimisations
-
-If you have a machine with one or two GPUs you can run multiple instance of describe.py in parallel, they should be able to answer questions about separate images.
-
-[TODO]

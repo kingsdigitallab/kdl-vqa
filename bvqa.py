@@ -23,20 +23,24 @@ from tqdm import tqdm
 VERSION = '0.1.0'
 # TODO: use a 'dummy' model
 DUMMY_DESCRIPTIONS = 0
-
-DESCRIBE_PATH_IMAGES = 'test/data/images'
-DESCRIBE_PATH_ANSWERS = 'test/data/answers'
-DESCRIBE_PATH_QUESTIONS = 'test/data/questions.json'
-DESCRIBE_PATH_LOG = 'test/data/describe.log'
 DESCRIBE_IMAGE_LOCK_TIMEOUT_IN_SECONDS = 2 * 60
+PATH_ROOT = 'data'
+TARGET_FROM_TYPE = {
+    'images': 'images',
+    'questions': 'questions.json',
+    'answers': 'answers',
+    'log': 'describe.log',
+}
 
-class FrameQuestionAnswers():
+
+class FrameQuestionAnswers:
 
     def __init__(self):
         self.reset()
 
-    def reset(self, model_name='moondream', filter='', max_images=0, redo=False, question_keys=None, optimise=False):
+    def reset(self, model_name='moondream', filter='', max_images=0, redo=False, question_keys=None, optimise=False, root=PATH_ROOT):
 
+        self.root_path = Path(root)
         self.filter = filter
         self.max_images = max_images
         self.redo = redo
@@ -44,10 +48,17 @@ class FrameQuestionAnswers():
         self.optimise = optimise
         self.describer = ImageDescriber.new(model_name)
         self.describer.set_optimisation(self.optimise)
-        self.timer = Timer(DESCRIBE_PATH_LOG)
+        self.timer = Timer(self.get_path('log'))
         self.describer.set_timer(self.timer)
 
-        Path(DESCRIBE_PATH_ANSWERS).mkdir(parents=True, exist_ok=True)
+        self.get_path('answers').mkdir(parents=True, exist_ok=True)
+
+    def get_path(self, type):
+        assert(type in TARGET_FROM_TYPE)
+
+        ret = self.root_path / TARGET_FROM_TYPE[type]
+
+        return ret
 
     def process_command_line(self):
         actions = self._get_actions_info()
@@ -68,7 +79,7 @@ class FrameQuestionAnswers():
         parser.add_argument('-r', '--redo', action='store_true', help='Always submit questions again. Disregard cache.')
         parser.add_argument('--max-images', dest='max_images', type=int, default=0, help='Number of images to describe.')
         # todo
-        parser.add_argument('-R', '--root', help='Path to a data folder.')
+        parser.add_argument('-R', '--root', help='Path to a data folder.', default=PATH_ROOT)
         # todo
         parser.add_argument('-s', '--settings', help='Path to a settings file.')
         parser.add_argument('-v', '--verbose', action='store_true', help='Enable verbose mode')
@@ -81,6 +92,7 @@ class FrameQuestionAnswers():
             redo=self.args.redo,
             question_keys=self.args.questions,
             optimise=self.args.optimise,
+            root=self.args.root,
         )
 
         action = actions.get(self.args.action, None)
@@ -107,10 +119,10 @@ class FrameQuestionAnswers():
 
         i = 0
 
-        image_paths = get_image_paths(DESCRIBE_PATH_IMAGES, self.filter)
+        image_paths = get_image_paths(self.get_path('images'), self.filter)
 
         for image_path in (pbar := tqdm(image_paths)):
-            qas_path = Path(DESCRIBE_PATH_ANSWERS) / f'{image_path.name}_{image_path.stat().st_size}.qas.json'
+            qas_path = self.get_path('answers') / f'{image_path.name}_{image_path.stat().st_size}.qas.json'
 
             # pbar.set_postfix_str(qas_path.name)
 
@@ -121,7 +133,7 @@ class FrameQuestionAnswers():
                     print(f'INFO: stop after {self.max_images} images.')
                     break
 
-        self.timer.step('DONE - described images')
+        self.timer.step(f'DONE - described {i} images')
 
 
     def save_image_descriptions(self, path, descriptions, unlock=False):
@@ -153,7 +165,7 @@ class FrameQuestionAnswers():
         model_name = self.describer.get_name()
         ret = None
 
-        qas_path = Path(DESCRIBE_PATH_ANSWERS) / f'{image_path.name}_{image_path.stat().st_size}.qas.json'
+        qas_path = self.get_path('answers') / f'{image_path.name}_{image_path.stat().st_size}.qas.json'
 
         if qas_path.exists():
             ret = self.read_json_safe(qas_path)
@@ -229,7 +241,7 @@ class FrameQuestionAnswers():
         return ret
 
     def read_questions(self):
-        return json.loads(Path(DESCRIBE_PATH_QUESTIONS).read_text())
+        return json.loads(self.get_path('questions').read_text())
     
     def get_hash_from_question(self, question):
         # hashlib.md5()

@@ -4,11 +4,7 @@ import datetime, time
 from pathlib import Path
 
 
-DESCRIBE_PATH_IMAGES = 'test/data/images'
-# PARENT_PATH = Path(__file__).parent
-# IN_PATH = PARENT_PATH / '../data/rds2/STiC/PoC_2024/data/source/videos'
-
-class Timer():
+class Timer:
 
     def __init__(self, log_path=None):
         self.log_path = log_path

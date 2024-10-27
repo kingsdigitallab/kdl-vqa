@@ -61,6 +61,56 @@ Such as:
 
 [TODO]
 
+## Caching
+
+The tool will not ask questions again when there is already a saved answer. It will ask it again only if the question or model has changed. This allows you to iteratively reformulate one question at a time and only that question will be processed on your image collection. Which is convenient considering how much models can be sensitive to the phrasing of a prompt. You can combine this with the -f option to test on a few images only.
+
+The -r option tells the tool to ignore the cache. When supplied, it will always ask the questions again. This is useful in the case where you want to compare the performance between different computing devices (e.g. Nvidia A100 vs L40s GPUs) to estimate the total duration on your entire collection.
+
+## Parallelism
+
+To speed up processing you can run multiple instances of the tool in parallel. For this to work they need to write in the same `answers` folder. Each instance locks 
+the image by writing a timestamp in the answer file. Other instances will skip the
+image when the timestamp is no older than two minutes.
+
+### SLURM HPC
+
+Simplest approach is to distribute the instances among different GPUs.
+
+Following command on SLURM environment sends two instances (-n 2) to a compute node each instance will use 4 cpus, 8GB of RAM and one A30 GPU:
+
+`srun -p interruptible_gpu -c 4 --mem-per-gpu 8G --gpus-per-task 1 --constraint a30 -n 2 python bvqa.py describe`
+
+You can keep adding more instances with further calls to `srun` ([srun doc](https://slurm.schedmd.com/srun.html)).
+
+[TODO: provide sbatch script]
+
+### Dedicated machine
+
+On a dedicated machine with multiple GPUs, you can launch each instance on a specific GPU like this:
+
+`CUDA_VISIBLE_DEVICES=0 nohup python bvqa.py describe &`
+
+`CUDA_VISIBLE_DEVICES=1 nohup python bvqa.py describe &`
+
+If a single instance uses less than 50% of the GPU VRAM and processing (use `nvidia-smi dmon` to check) and less than 50% of CPU & RAM then you can send another instance on the same GPU.
+
+## Tips
+
+Finding the right model and prompts to get good answers is a matter of trial and errors. 
+It requires iteratively crafting the questions to get the desired form and accuracy of responses. 
+Some models need some nudging. 
+And some questions will never bring satisfactory level of answers by a particural model or any curent model. 
+Knowing how to rephrase, reframe or simply stopping is a bit of an art.
+
+A recommended method is to work one question at a time with a handful of diverse images. Engineer the prompt to optimise accuracy. If it is high enough, iterate over a slightly larger sample of images. If you are confident the level of error is tolerable and your sample representative enough of the whole collection then the question is worth submitting to all the images.
+
+It is more computationally efficient to prepare all your questions before sending them to the entire collection. Running one question at a time over N images Q times is much slower than running the script once with Q questions over N images.
+
+After running your questions on a larger proportion of your collection, you might want to spot check the responses here and there to get a sense of how good/usable they are.
+
+As prompt engineering is usually very model-specific, moving to another model can be very disruptive. It aways mean reassessing the answers and often means reformulating many questions from scratch.
+
 ## Models
 
 ### Supported
@@ -84,3 +134,6 @@ default model, decent responses for general questions, quite fast, even on CPU. 
 * Vila [MAYBE]: docker not building, can't find instructions on how to run model with python
 * HuggingFaceM4/Idefics3-8B-Llama3 [MAYBE]: Requires ~24GB VRAM.
 
+### Adding a model to this tool
+
+[TODO]

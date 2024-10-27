@@ -33,7 +33,7 @@ By default the root folder for all the input and output is /data.
 ### Prepare your input
 
 * **/data/images**: copy your input images (*.jpg) anywhere under that folder
-* **/data/questions.json**: your questions (see example in /test/data/questions.json)
+* **/data/questions.json**: your questions (see example in [/test/data/questions.json](/test/data/questions.json))
 
 ### Generate descriptions
 

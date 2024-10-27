@@ -14,17 +14,14 @@ Purpose: Ask a series of questions to visual language about a collection of imag
 * granual caching: only ask question again if prompt or model has changed
 * [coming soon] export answers to HTML for manual review
 
-## Requirements & set up
+## Requirements
 
-GPU will speed up processing but is optional.
-
-* [Install `poetry`](https://python-poetry.org/docs/#installing-with-pipx).
-* cd into this folder
-* `poetry install`: to create the virtual environment & install dependent packages
-* `poetry run python describe.py`: to describe a set of images
+Follow the [build instructions](build/README.md).
 
 The first time the script runs it will download the visual language model that answers the questions.
 Currently, this is [moondream2](https://github.com/vikhyat/moondream) because it's light, fast & performs generally well.
+
+Although a GPU is not mandatory for the moondream model, processing will be very slow without it.
 
 ## Input
 

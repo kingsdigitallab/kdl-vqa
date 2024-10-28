@@ -1,4 +1,3 @@
-wheel
 git+https://github.com/huggingface/transformers
 qwen-vl-utils
 torch

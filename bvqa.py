@@ -64,7 +64,7 @@ class FrameQuestionAnswers:
         actions = self._get_actions_info()
         epilog = 'Action:\n'
         for name, info in actions.items():
-            epilog += f'  {name}:\n    {info['description']}\n'
+            epilog += f'  {name}:\n    {info["description"]}\n'
 
         parser = argparse.ArgumentParser(
             formatter_class=argparse.RawDescriptionHelpFormatter,

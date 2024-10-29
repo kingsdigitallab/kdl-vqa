@@ -54,7 +54,7 @@ class QwenVL(ImageDescriber):
             if i + 1 > len(answers):
                 answer = 'NOANSWER'
             else:
-                answer = answers[i]
+                answer = answers[i][1]
             ret[key] = answer
 
         self.log(f'question - after - {question_keys}')

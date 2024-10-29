@@ -20,7 +20,7 @@ It saves the answers in json files (one file per image).
 Follow the [build instructions](build/README.md).
 
 The first time the script runs it will download the visual language model that answers the questions.
-Currently, this is [moondream2](https://github.com/vikhyat/moondream) because it's light, fast & performs generally well.
+Currently, this is [moondream2](https://github.com/vikhyat/moondream) because it's light, fast & performs generally well and is well maintained.
 
 Although a GPU is not mandatory for the moondream model, processing will be very slow without it.
 
@@ -63,15 +63,23 @@ Such as:
 
 ## Caching
 
-The tool will not ask questions again when there is already a saved answer. It will ask it again only if the question or model has changed. This allows you to iteratively reformulate one question at a time and only that question will be processed on your image collection. Which is convenient considering how much models can be sensitive to the phrasing of a prompt. You can combine this with the -f option to test on a few images only.
+The tool will not ask a question again if an answer has been saved.
+It will ask it again only if the question or model has changed. 
+This allows you to iteratively reformulate one question at a time 
+and only that question will be processed on your image collection. 
+Which is convenient considering how much models can be sensitive to the phrasing of a prompt. 
+You can combine this with the -f option to test on a few images only.
 
-The -r option tells the tool to ignore the cache. When supplied, it will always ask the questions again. This is useful in the case where you want to compare the performance between different computing devices (e.g. Nvidia A100 vs L40s GPUs) to estimate the total duration on your entire collection.
+The -r option tells the tool to ignore the cache. 
+When supplied, it will always ask the questions again. 
+This is useful in the case where you want to compare the performance between different computing devices (e.g. Nvidia A100 vs L40s GPUs) to estimate the total duration on your entire collection.
 
 ## Parallelism
 
-To speed up processing you can run multiple instances of the tool in parallel. For this to work they need to write in the same `answers` folder. Each instance locks 
-the image by writing a timestamp in the answer file. Other instances will skip the
-image when the timestamp is no older than two minutes.
+To speed up processing you can run multiple instances of the tool in parallel. 
+For this to work they need to write in the same `answers` folder. 
+Each instance locks the image by writing a timestamp in the answer file. 
+Other instances will skip the image when the timestamp is no older than two minutes.
 
 ### SLURM HPC
 
@@ -93,23 +101,29 @@ On a dedicated machine with multiple GPUs, you can launch each instance on a spe
 
 `CUDA_VISIBLE_DEVICES=1 nohup python bvqa.py describe &`
 
-If a single instance uses less than 50% of the GPU VRAM and processing (use `nvidia-smi dmon` to check) and less than 50% of CPU & RAM then you can send another instance on the same GPU.
+If a single instance uses less than 50% of the GPU VRAM and processing (use `nvidia-smi dmon` to check) 
+and less than 50% of CPU & RAM then you can send another instance on the same GPU.
 
 ## Tips
 
 Finding the right model and prompts to get good answers is a matter of trial and errors. 
 It requires iteratively crafting the questions to get the desired form and accuracy of responses. 
 Some models need some nudging. 
-And some questions will never bring satisfactory level of answers by a particural model or any curent model. 
-Knowing how to rephrase, reframe or simply stopping is a bit of an art.
+And some questions will never be satisfactorily answered by a given model or any curent model. 
+Knowing how to rephrase, reframe or simply stop is a bit of an art.
 
-A recommended method is to work one question at a time with a handful of diverse images. Engineer the prompt to optimise accuracy. If it is high enough, iterate over a slightly larger sample of images. If you are confident the level of error is tolerable and your sample representative enough of the whole collection then the question is worth submitting to all the images.
+A recommended method is to work one question at a time with a handful of diverse images. 
+Engineer the prompt to optimise accuracy. If it is high enough, iterate over a slightly larger sample of images. 
+If you are confident the level of error is tolerable and your sample representative enough of the whole collection 
+then the question is worth submitting to all the images.
 
-It is more computationally efficient to prepare all your questions before sending them to the entire collection. Running one question at a time over N images Q times is much slower than running the script once with Q questions over N images.
+It is more computationally efficient to prepare all your questions before sending them to the entire collection. 
+Running one question at a time over N images Q times is much slower than running the script once with Q questions over N images.
 
 After running your questions on a larger proportion of your collection, you might want to spot check the responses here and there to get a sense of how good/usable they are.
 
-As prompt engineering is usually very model-specific, moving to another model can be very disruptive. It aways mean reassessing the answers and often means reformulating many questions from scratch.
+As prompt engineering is usually very model-specific, moving to another model can be very disruptive. 
+It aways mean reassessing the answers and often means reformulating many questions from scratch.
 
 ## Models
 

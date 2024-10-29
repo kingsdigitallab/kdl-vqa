@@ -50,8 +50,12 @@ class QwenVL(ImageDescriber):
         print(res)
 
         answers = re.findall(r'(?m)^(\d+).\s*(.*)\s*$', res)
-        for answer in answers:
-            ret[keys[int(answer[0])]] = answer[1]
+        for i, key in enumerate(keys):
+            if i + 1 > len(answers):
+                answer = 'NOANSWER'
+            else:
+                answer = answers[i]
+            ret[key] = answer
 
         self.log(f'question - after - {question_keys}')
 

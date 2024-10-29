@@ -47,7 +47,7 @@ class QwenVL(ImageDescriber):
             question += f'{i}. {questions[k]}\n'
         res = self.answer_question(image_path, question)
 
-        print(res)
+        # print(res)
 
         answers = re.findall(r'(?m)^(\d+).\s*(.*)\s*$', res)
         for i, key in enumerate(keys):
@@ -59,7 +59,7 @@ class QwenVL(ImageDescriber):
 
         self.log(f'question - after - {question_keys}')
 
-        print(ret)
+        # print(ret)
         
         return ret
 

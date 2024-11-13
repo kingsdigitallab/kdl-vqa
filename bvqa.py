@@ -130,7 +130,7 @@ class FrameQuestionAnswers:
             if res:
                 i += 1
                 if self.max_images and i >= self.max_images:
-                    print(f'INFO: stop after {self.max_images} images.')
+                    self.timer.step(f'INFO: stop after {self.max_images} images.')
                     break
 
         self.timer.step(f'DONE - described {i} images')
@@ -171,6 +171,8 @@ class FrameQuestionAnswers:
 
         qas_path = self.get_path('answers') / f'{image_path.name}_{image_path.stat().st_size}.qas.json'
 
+        special_case = ''
+
         if qas_path.exists():
             ret = self.read_json_safe(qas_path)
             if ret is None:
@@ -207,13 +209,14 @@ class FrameQuestionAnswers:
         if ret:
             now = time.time()
             if now - ret['meta']['started'] < DESCRIBE_IMAGE_LOCK_TIMEOUT_IN_SECONDS:
-                print('WARNING: image is already locked.')
+                special_case = 'image is already locked'
+                ret = None
             else:
                 questions_to_ask = {}
                 questions = self.read_questions()
                 if questions is None:
-                    print(f'ERROR: question file not found.')
-                    questions = {}
+                    self._error('question file not found.')
+                    
                 for question_key, question in questions.items():
                     if self.question_keys and question_key not in self.question_keys:
                         continue
@@ -239,11 +242,15 @@ class FrameQuestionAnswers:
                             'model': model_name,
                             'hash': self.get_hash_from_question(questions[question_key])
                         }
-
                     # save and unlock
                     self.save_image_descriptions(qas_path, ret, True)
+                else:
+                    special_case = 'no unanswered question'
+                    ret = None
 
-        self.timer.step(f'describe image - after')
+        if special_case:
+            special_case = ' - ' + special_case
+        self.timer.step(f'describe image - after {special_case}')
 
         return ret
 
@@ -258,6 +265,11 @@ class FrameQuestionAnswers:
         # hashlib.md5()
         # base64.b64encode()
         return question
+
+    def _error(message):
+        print(f'ERROR: {message}')
+        self.timer.step(f'ERROR: {message}')
+        exit()
 
 if __name__ == '__main__':
     # Code to execute only when run as a script

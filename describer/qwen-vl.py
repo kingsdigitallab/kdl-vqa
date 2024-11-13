@@ -1,14 +1,10 @@
 # Keep all slow imports (e.g. torch) inside methods
-print('qw0')
 from .base import ImageDescriber
-from PIL import Image
+# from PIL import Image
 from pathlib import Path
 import datetime, time
-from transformers import Qwen2VLForConditionalGeneration, AutoTokenizer, AutoProcessor
-from qwen_vl_utils import process_vision_info
 import torch
 import re
-print('qw1')
 
 MODEL_ID = "Qwen/Qwen2-VL-2B-Instruct-GPTQ-Int4"
 MODEL_VERSION = ''
@@ -68,6 +64,8 @@ class QwenVL(ImageDescriber):
 
 
     def answer_question(self, image_path, question):
+        from qwen_vl_utils import process_vision_info
+
         if not self.model:
             self._init_model()
 
@@ -117,6 +115,7 @@ class QwenVL(ImageDescriber):
         return ret[0]
 
     def _init_model(self):
+        import torch
         self.model = None
 
         is_cuda_available = torch.cuda.is_available()
@@ -131,9 +130,11 @@ class QwenVL(ImageDescriber):
         if self.model is None:
             raise Exception('GPU is needed for this model.')
 
+        from transformers import AutoProcessor
         self.processor = AutoProcessor.from_pretrained(MODEL_ID)
     
     def _new_model(self, use_cuda=False, use_attention=False):
+        from transformers import Qwen2VLForConditionalGeneration
         self.model = Qwen2VLForConditionalGeneration.from_pretrained(
             MODEL_ID, torch_dtype="auto", device_map="auto"
         )

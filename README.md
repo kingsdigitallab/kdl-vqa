@@ -145,13 +145,29 @@ default model, decent responses for general questions, quite fast, even on CPU. 
 * able to work on any image resolution (no downsizing)
 * Tried the int4 ~5 x slower than MD by default. With higher mem consumption.
 
+* VRAM: 16GB
+* A30: 7 to 40s / qst
+
 ### Non supported models
 
-* llava-next [TODO]: 0.5b needs access to gated llama-3-8b model on HF
-* Phi-3.5-vision-instruct (4.15B) [TRIED]: demo code out of memory on A30 (24GB) although model is 4.15B x BF16. Requires 50GB VRAM!
-* Vila [MAYBE]: docker not building, can't find instructions on how to run model with python
-* HuggingFaceM4/Idefics3-8B-Llama3 [MAYBE]: Requires ~24GB VRAM.
+Regularly check [Huggingface VLM leaderboard](https://huggingface.co/spaces/opencompass/open_vlm_leaderboard) and [OpenCompass Leaderboard](https://mmbench.opencompass.org.cn/leaderboard) for new candidates.
 
-### Adding a model to this tool
+* llama3.2-11B-Vision-Instruct [MAYBE]: 
+* llava-next [MAYBE]: 0.5b needs access to gated llama-3-8b model on HF
+* Vila [MAYBE]: docker not building, can't find instructions on how to run model with python
+* HuggingFaceM4/Idefics3-8B-Llama3 [MAYBE]: Requires ~24GB VRAM
+* Phi-3.5-vision-instruct (4.15B) [TRIED]: demo code out of memory on A30 (24GB) although model is 4.15B x BF16. Requires 50GB VRAM!
+* PaliGemma ?
+
+### Adding support for a new type of VLM to this tool
 
 [TODO]
+
+In short, you would need to create a new describer module and class under /describer package. 
+It should extend from ImageDescriber (in describe/base.py) and implement answer_question() and get_name().
+
+### External references
+
+* [Vision-Language Models for Vision Tasks: A Survey, 2024](https://arxiv.org/abs/2304.00685)
+* [Abdallah, A., Eberharter, D., Pfister, Z. et al. A survey of recent approaches to form understanding in scanned documents. Artif Intell Rev 57, 342 (2024). ](https://link.springer.com/article/10.1007/s10462-024-11000-0#Sec12)
+

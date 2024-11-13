@@ -129,9 +129,13 @@ It aways mean reassessing the answers and often means reformulating many questio
 
 ### Supported
 
-#### [moondream](https://huggingface.co/vikhyatk/moondream2) (1.87b)
+#### [moondream](https://huggingface.co/vikhyatk/moondream2) (1.87b, FP16)
 
-default model, decent responses for general questions, quite fast, even on CPU. Speed: ~9s/question/image on i9 CPU. ~1.7s/q/i on 1080ti (~5x faster; 72s for 2 img x 21 qst). Deterministic. 
+default model, decent responses for general questions, quite fast, even on CPU. Speed: ~9s/question/image on i9 CPU. ~1.7s/q/i on 1080ti (~5x faster; 72s for 2 img x 21 qst). Deterministic.
+
+* Minimum GPU VRAM: 8GB
+* CPU (i7 12th gen, 16 cpus): 5 to 40s / question (short to long)
+* A30: 1 to 9s / qst
 
 #### [qwen-vl](https://huggingface.co/Qwen/Qwen2-VL-2B-Instruct-GPTQ-Int4) (1.07B)
 

@@ -31,7 +31,8 @@ class QwenVL(ImageDescriber):
     def get_name(self):
         return f'{MODEL_ID}:{MODEL_VERSION}'
 
-    def answer_questions(self, image_path: str, questions: dict) -> dict:
+    # disabled: faster but quality will drop as number of qst increase
+    def answer_questions_unreliable(self, image_path: str, questions: dict) -> dict:
         """Returns answers to all questions 
         about an image in image_path.
         """

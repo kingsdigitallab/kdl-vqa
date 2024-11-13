@@ -266,7 +266,7 @@ class FrameQuestionAnswers:
         # base64.b64encode()
         return question
 
-    def _error(message):
+    def _error(self, message):
         print(f'ERROR: {message}')
         self.timer.step(f'ERROR: {message}')
         exit()

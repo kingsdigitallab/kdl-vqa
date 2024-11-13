@@ -31,7 +31,7 @@ class ImageDescriber:
         return ret
 
     def get_name(self) -> str:
-        """Returns the name of the underlying model .
+        """Returns the name of the underlying model.
         In the hugging face format: org/model:version.
         E.g. vikhyatk/moondream2:2024-07-23.
         This can be looked up on HF website.
@@ -65,9 +65,3 @@ class ImageDescriber:
         timer = getattr(self, 'timer')
         if timer:
             timer.step(message)
-
-
-
-        
-
-

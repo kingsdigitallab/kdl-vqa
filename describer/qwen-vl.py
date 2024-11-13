@@ -1,3 +1,5 @@
+# Keep all slow imports (e.g. torch) inside methods
+print('qw0')
 from .base import ImageDescriber
 from PIL import Image
 from pathlib import Path
@@ -6,7 +8,7 @@ from transformers import Qwen2VLForConditionalGeneration, AutoTokenizer, AutoPro
 from qwen_vl_utils import process_vision_info
 import torch
 import re
-
+print('qw1')
 
 MODEL_ID = "Qwen/Qwen2-VL-2B-Instruct-GPTQ-Int4"
 MODEL_VERSION = ''

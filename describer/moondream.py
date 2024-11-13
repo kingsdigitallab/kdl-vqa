@@ -1,9 +1,8 @@
+# Keep all slow imports (e.g. torch) inside methods
 from .base import ImageDescriber
-from transformers import AutoModelForCausalLM, AutoTokenizer
 from PIL import Image
 from pathlib import Path
 import datetime, time
-import torch
 
 MODEL_ID = 'vikhyatk/moondream2'
 MODEL_VERSION = '2024-07-23'
@@ -65,6 +64,7 @@ class Moondream(ImageDescriber):
         return self.model.answer_question(self.cache['image_encoding'], question, self.tokenizer)
 
     def _init_model(self):
+        import torch
         self.model = None
 
         is_cuda_available = torch.cuda.is_available()
@@ -81,9 +81,13 @@ class Moondream(ImageDescriber):
             self._new_model()
 
         # why no .to(X) ?
+        from transformers import AutoTokenizer
         self.tokenizer = AutoTokenizer.from_pretrained(MODEL_ID, revision = MODEL_VERSION)
     
     def _new_model(self, use_cuda=False, use_attention=False):
+        from transformers import AutoModelForCausalLM
+        import torch
+
         self.model = AutoModelForCausalLM.from_pretrained(
             MODEL_ID, 
             trust_remote_code=True, 

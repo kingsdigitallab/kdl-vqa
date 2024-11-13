@@ -136,10 +136,14 @@ class FrameQuestionAnswers:
         self.timer.step(f'DONE - described {i} images')
 
 
+    def action_clear(self):
+        '''Removes all answer files'''
+        import shutil
+        res = shutil.rmtree(str(self.get_path('answers')))
+
     def save_image_descriptions(self, path, descriptions, unlock=False):
         descriptions['meta']['started'] = 0 if unlock else time.time() 
         path.write_text(json.dumps(descriptions, indent=2))
-
 
     def read_json_safe(self, path):
         """Read an existing json file.
@@ -207,6 +211,9 @@ class FrameQuestionAnswers:
             else:
                 questions_to_ask = {}
                 questions = self.read_questions()
+                if questions is None:
+                    print(f'ERROR: question file not found.')
+                    questions = {}
                 for question_key, question in questions.items():
                     if self.question_keys and question_key not in self.question_keys:
                         continue
@@ -241,7 +248,11 @@ class FrameQuestionAnswers:
         return ret
 
     def read_questions(self):
-        return json.loads(self.get_path('questions').read_text())
+        ret = None
+        questions_path = self.get_path('questions')
+        if questions_path.exists():
+            ret = json.loads(questions_path.read_text())
+        return ret
     
     def get_hash_from_question(self, question):
         # hashlib.md5()

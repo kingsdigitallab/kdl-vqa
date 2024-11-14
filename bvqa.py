@@ -78,9 +78,9 @@ class FrameQuestionAnswers:
             description='Batch visual question answering.'
         )
         parser.add_argument("action", help="action to perform", choices=actions.keys())
-        parser.add_argument('-d', '--describer', dest='describer_name', help='Name of the backend to describe the images.', default='moondream')
-        parser.add_argument('-m', '--model', dest='model_id', help='ID of the huggingface model to describe the images.', default='')
-        parser.add_argument('-v', '--version', dest='model_version', help='version/revision of the model, see model on hugging face.', default='')
+        parser.add_argument('-d', '--describer', dest='describer_name', help='Name of the backend to describe the images (e.g. moondream).', default='moondream')
+        parser.add_argument('-m', '--model', dest='model_id', help='ID of the huggingface model to describe the images (e.g. vikhyatk/moondream2).', default='')
+        parser.add_argument('-v', '--version', dest='model_version', help='version/revision of the model, see model on hugging face (e.g. 2024-08-26).', default='')
         parser.add_argument('-f', '--filter', help='Filter image path by a string, e.g. batman')
         parser.add_argument('-q', '--questions', dest='question_keys', nargs='*', help='Only submit the questions with the given keys.')
         parser.add_argument('-o', '--optimise', action='store_true', help='Use model optimisations, if any (e.g. flash attention). Need higher specs.')
@@ -104,7 +104,7 @@ class FrameQuestionAnswers:
             root=self.args.root,
         )
         self.timer.step('=' * 40)
-        self.timer.step(' '.join(sys.argv[1:]))
+        self.timer.step('args : ' + ' '.join(sys.argv[1:]))
 
         action = actions.get(self.args.action, None)
         if action:
@@ -127,7 +127,9 @@ class FrameQuestionAnswers:
         '''Submit questions about multiple images to a visual model & save answers.'''
         self.new_describer()
 
-        self.timer.step(f'{self.describer.get_name()}')
+        self.timer.step(f'model: {self.describer.get_name()}')
+        import socket
+        self.timer.step(f'host : {socket.gethostname()}')
 
         i = 0
 

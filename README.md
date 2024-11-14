@@ -52,8 +52,10 @@ For more additional options see:
 
 Such as:
 
-* -m to select a different vision language model (VLM) / describer
-* -f to filter which images are processed
+* -d to select a different describer (moondream or qwen-vl at the moment)
+* -m to specify which exact model the describer should use (e.g. vikhyatk/moondream2)
+* -v to specify the version/revision of the model (e.g. 2024-08-26)
+* -f to filter which image is processed
 * -q to filter which questions to ask
 * -R to use a different root folder for your data
 

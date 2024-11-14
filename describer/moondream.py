@@ -97,7 +97,8 @@ class Moondream(ImageDescriber):
         )
         if use_cuda and not use_attention:
             self.model = self.model.to("cuda")
-
+        # print('#'*10)
+        # print(next(self.model.parameters()).device)
 
     def _encode_image(self, image_path):
         pass

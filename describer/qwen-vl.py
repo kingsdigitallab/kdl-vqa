@@ -10,6 +10,7 @@ MODEL_ID = "Qwen/Qwen2-VL-2B-Instruct-GPTQ-Int4"
 MODEL_VERSION = ''
 MAX_NEW_TOKENS = 512
 
+
 class QwenVL(ImageDescriber):
     """Image description using Qwen2-VL model.
 
@@ -18,16 +19,14 @@ class QwenVL(ImageDescriber):
     1.07B params, int4
     """    
     
-    def __init__(self):
+    def __init__(self, model_id='', model_version=''):
+        super().__init__(model_id or MODEL_ID, model_version or MODEL_VERSION)
         self.model = None
         self.processor = None
         self.cache = {
             'image_path': None,
             'image_encoding': None,
         }
-
-    def get_name(self):
-        return f'{MODEL_ID}:{MODEL_VERSION}'
 
     # disabled: faster but quality will drop as number of qst increase
     def answer_questions_unreliable(self, image_path: str, questions: dict) -> dict:
@@ -131,12 +130,12 @@ class QwenVL(ImageDescriber):
             raise Exception('GPU is needed for this model.')
 
         from transformers import AutoProcessor
-        self.processor = AutoProcessor.from_pretrained(MODEL_ID)
+        self.processor = AutoProcessor.from_pretrained(self.model_id)
     
     def _new_model(self, use_cuda=False, use_attention=False):
         from transformers import Qwen2VLForConditionalGeneration
         self.model = Qwen2VLForConditionalGeneration.from_pretrained(
-            MODEL_ID, torch_dtype="auto", device_map="auto"
+            self.model_id, torch_dtype="auto", device_map="auto"
         )
 
     def _encode_image(self, image_path):

@@ -7,6 +7,7 @@ import datetime, time
 MODEL_ID = 'vikhyatk/moondream2'
 MODEL_VERSION = '2024-07-23'
 
+
 class Moondream(ImageDescriber):
     """Image description using Moondeam2 model.
 
@@ -41,16 +42,14 @@ class Moondream(ImageDescriber):
     * moondream.batch_answer() isn't faster than calling answer_question multiple times
     """    
     
-    def __init__(self):
+    def __init__(self, model_id='', model_version=''):
+        super().__init__(model_id or MODEL_ID, model_version or MODEL_VERSION)
         self.model = None
         self.tokenizer = None
         self.cache = {
             'image_path': None,
             'image_encoding': None,
         }
-
-    def get_name(self):
-        return f'{MODEL_ID}:{MODEL_VERSION}'
 
     def answer_question(self, image_path, question):
         if not self.model:
@@ -82,16 +81,16 @@ class Moondream(ImageDescriber):
 
         # why no .to(X) ?
         from transformers import AutoTokenizer
-        self.tokenizer = AutoTokenizer.from_pretrained(MODEL_ID, revision = MODEL_VERSION)
+        self.tokenizer = AutoTokenizer.from_pretrained(self.model_id, revision = self.model_version)
     
     def _new_model(self, use_cuda=False, use_attention=False):
         from transformers import AutoModelForCausalLM
         import torch
 
         self.model = AutoModelForCausalLM.from_pretrained(
-            MODEL_ID, 
-            trust_remote_code=True, 
-            revision=MODEL_VERSION,
+            self.model_id,
+            trust_remote_code=True,
+            revision=self.model_version,
             device_map="cuda" if use_attention else None,
             torch_dtype = torch.float16 if use_cuda else None,
             attn_implementation = "flash_attention_2" if use_attention else None

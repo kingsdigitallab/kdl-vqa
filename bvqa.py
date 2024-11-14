@@ -38,27 +38,33 @@ class FrameQuestionAnswers:
     def __init__(self):
         self.reset()
 
-    def reset(self, model_name='moondream', filter='', max_images=0, redo=False, question_keys=None, optimise=False, root=PATH_ROOT):
+    def reset(self, describer_name='moondream', model_id='', model_version='', filter='', max_images=0, redo=False, question_keys=None, optimise=False, root=PATH_ROOT):
 
+        self.describer = None
+        self.describer_name = describer_name
+        self.model_id = model_id
+        self.model_version = model_version
         self.root_path = Path(root)
         self.filter = filter
         self.max_images = max_images
         self.redo = redo
         self.question_keys = question_keys
         self.optimise = optimise
-        self.describer = ImageDescriber.new(model_name)
-        self.describer.set_optimisation(self.optimise)
         self.timer = Timer(self.get_path('log'))
-        self.describer.set_timer(self.timer)
-
         self.get_path('answers').mkdir(parents=True, exist_ok=True)
+    
+    def new_describer(self):
+        ret = ImageDescriber.new(self.describer_name, self.model_id, self.model_version)
+        if ret is None:
+            self._error(f'No describer supports the given parameters ({self.describer_name}, {self.model_id}, {self.model_version}).')
+        ret.set_timer(self.timer)
+        ret.set_optimisation(self.optimise)
+        self.describer = ret
+        return ret
 
     def get_path(self, type):
         assert(type in TARGET_FROM_TYPE)
-
-        ret = self.root_path / TARGET_FROM_TYPE[type]
-
-        return ret
+        return self.root_path / TARGET_FROM_TYPE[type]
 
     def process_command_line(self):
         actions = self._get_actions_info()
@@ -72,28 +78,33 @@ class FrameQuestionAnswers:
             description='Batch visual question answering.'
         )
         parser.add_argument("action", help="action to perform", choices=actions.keys())
+        parser.add_argument('-d', '--describer', dest='describer_name', help='Name of the backend to describe the images.', default='moondream')
+        parser.add_argument('-m', '--model', dest='model_id', help='ID of the huggingface model to describe the images.', default='')
+        parser.add_argument('-v', '--version', dest='model_version', help='version/revision of the model, see model on hugging face.', default='')
         parser.add_argument('-f', '--filter', help='Filter image path by a string, e.g. batman')
-        parser.add_argument('-q', '--questions', nargs='*', help='Only submit the questions with the given keys.')
-        parser.add_argument('-m', '--model', help='Name of the model to describe the images.', default='moondream')
+        parser.add_argument('-q', '--questions', dest='question_keys', nargs='*', help='Only submit the questions with the given keys.')
         parser.add_argument('-o', '--optimise', action='store_true', help='Use model optimisations, if any (e.g. flash attention). Need higher specs.')
         parser.add_argument('-r', '--redo', action='store_true', help='Always submit questions again. Disregard cache.')
         parser.add_argument('--max-images', dest='max_images', type=int, default=0, help='Number of images to describe.')
-        # todo
         parser.add_argument('-R', '--root', help='Path to a data folder.', default=PATH_ROOT)
         # todo
-        parser.add_argument('-s', '--settings', help='Path to a settings file.')
-        parser.add_argument('-v', '--verbose', action='store_true', help='Enable verbose mode')
+        # parser.add_argument('-s', '--settings', help='Path to a settings file.')
+        # parser.add_argument('-v', '--verbose', action='store_true', help='Enable verbose mode')
         self.args = parser.parse_args()
 
         self.reset(
-            model_name=self.args.model,
+            describer_name=self.args.describer_name,
+            model_id=self.args.model_id,
+            model_version=self.args.model_version,
             filter=self.args.filter,
             max_images=self.args.max_images,
             redo=self.args.redo,
-            question_keys=self.args.questions,
+            question_keys=self.args.question_keys,
             optimise=self.args.optimise,
             root=self.args.root,
         )
+        self.timer.step('=' * 40)
+        self.timer.step(' '.join(sys.argv[1:]))
 
         action = actions.get(self.args.action, None)
         if action:
@@ -114,8 +125,9 @@ class FrameQuestionAnswers:
 
     def action_describe(self):
         '''Submit questions about multiple images to a visual model & save answers.'''
-        self.timer.step('=' * 40)
-        self.timer.step(f'-m {self.describer.get_name()} -f {self.filter}')
+        self.new_describer()
+
+        self.timer.step(f'{self.describer.get_name()}')
 
         i = 0
 
@@ -222,15 +234,12 @@ class FrameQuestionAnswers:
                         continue
                     if question:
                         question_hash = self.get_hash_from_question(question)
-                        if self.redo or question_key not in ret['questions'] or ret['questions'][question_key]['hash'] != question_hash:
+                        if (self.redo 
+                            or question_key not in ret['questions'] 
+                            or ret['questions'][question_key]['hash'] != question_hash
+                            or ret['questions'][question_key]['model'] != model_name
+                        ):
                             questions_to_ask[question_key] = question
-                            # self.timer.step(f'question - before - {question_key}')
-                            # ret['questions'][question_key] = {
-                            #     'answer': self.describer.answer_question(str(image_path), question),
-                            #     'model': model_name,
-                            #     'hash': question_hash
-                            # }
-                            # self.save_image_descriptions(qas_path, ret)
 
                 if questions_to_ask:
                     # lock the file

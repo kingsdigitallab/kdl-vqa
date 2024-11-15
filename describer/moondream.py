@@ -43,7 +43,10 @@ class Moondream(ImageDescriber):
     """    
     
     def __init__(self, model_id='', model_version=''):
-        super().__init__(model_id or MODEL_ID, model_version or MODEL_VERSION)
+        model_id = model_id or MODEL_ID
+        if model_id == MODEL_ID and not model_version:
+            model_version = MODEL_VERSION
+        super().__init__(model_id, model_version)
         self.model = None
         self.tokenizer = None
         self.cache = {

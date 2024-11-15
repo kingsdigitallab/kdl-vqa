@@ -130,6 +130,7 @@ class FrameQuestionAnswers:
         self.timer.step(f'model: {self.describer.get_name()}')
         import socket
         self.timer.step(f'host : {socket.gethostname()}')
+        self.timer.step(f'comp : {self.describer.get_compute_info()}')
 
         i = 0
 
@@ -281,6 +282,12 @@ class FrameQuestionAnswers:
         print(f'ERROR: {message}')
         self.timer.step(f'ERROR: {message}')
         exit()
+
+    def action_load(self):
+        '''Attempt to load the describer model.'''
+        describer = self.new_describer()
+        info = describer.get_compute_info()
+        print(info)
 
 if __name__ == '__main__':
     # Code to execute only when run as a script

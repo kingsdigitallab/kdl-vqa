@@ -82,6 +82,8 @@ class Moondream(ImageDescriber):
         # why no .to(X) ?
         from transformers import AutoTokenizer
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_id, revision = self.model_version)
+
+        return self.model
     
     def _new_model(self, use_cuda=False, use_attention=False):
         from transformers import AutoModelForCausalLM
@@ -90,16 +92,13 @@ class Moondream(ImageDescriber):
         self.model = AutoModelForCausalLM.from_pretrained(
             self.model_id,
             trust_remote_code=True,
-            revision=self.model_version,
+            revision=self.model_version,    
             device_map="cuda" if use_attention else None,
             torch_dtype = torch.float16 if use_cuda else None,
             attn_implementation = "flash_attention_2" if use_attention else None
         )
         if use_cuda and not use_attention:
             self.model = self.model.to("cuda")
-        # print('#'*10)
-        # print(next(self.model.parameters()).device)
-
+        
     def _encode_image(self, image_path):
         pass
-    

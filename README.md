@@ -167,7 +167,7 @@ Regularly check [Huggingface VLM leaderboard](https://huggingface.co/spaces/open
 [TODO]
 
 In short, you would need to create a new describer module and class under /describer package. 
-It should extend from ImageDescriber (in describe/base.py) and implement answer_question() and get_name().
+It should extend from ImageDescriber (in describe/base.py) and implement answer_question() and _init_model().
 
 ### External references
 

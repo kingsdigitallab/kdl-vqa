@@ -131,7 +131,9 @@ class QwenVL(ImageDescriber):
 
         from transformers import AutoProcessor
         self.processor = AutoProcessor.from_pretrained(self.model_id)
-    
+
+        return self.model
+
     def _new_model(self, use_cuda=False, use_attention=False):
         from transformers import Qwen2VLForConditionalGeneration
         self.model = Qwen2VLForConditionalGeneration.from_pretrained(

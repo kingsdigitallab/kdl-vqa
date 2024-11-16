@@ -87,11 +87,16 @@ Other instances will skip the image when the timestamp is no older than two minu
 
 Simplest approach is to distribute the instances among different GPUs.
 
-Following command on SLURM environment sends two instances (-n 2) to a compute node each instance will use 4 cpus, 8GB of RAM and one A30 GPU:
+Following command on SLURM environment sends two instances (-n 2) to a compute node, each instance will use 4 cpus, 8GB of RAM and one A30 GPU:
 
 `srun -p interruptible_gpu -c 4 --mem-per-gpu 8G --gpus-per-task 1 --constraint a30 -n 2 python bvqa.py describe`
 
 You can keep adding more instances with further calls to `srun` ([srun doc](https://slurm.schedmd.com/srun.html)).
+
+To run an interactive bash on a A40 compute node:
+
+`srun -p interruptible_gpu -c 4 --mem-per-gpu 8G --gpus-per-task 1 --constraint a40 -n 1 --ex
+clude erc-hpc-comp190 --pty bash`
 
 [TODO: provide sbatch script]
 
@@ -155,12 +160,13 @@ default model, decent responses for general questions, quite fast, even on CPU. 
 
 Regularly check [Huggingface VLM leaderboard](https://huggingface.co/spaces/opencompass/open_vlm_leaderboard) and [OpenCompass Leaderboard](https://mmbench.opencompass.org.cn/leaderboard) for new candidates.
 
-* llama3.2-11B-Vision-Instruct [MAYBE]: 
+* llama3.2-11B-Vision-Instruct [MAYBE]: worth trying.
 * llava-next [MAYBE]: 0.5b needs access to gated llama-3-8b model on HF
 * Vila [MAYBE]: docker not building, can't find instructions on how to run model with python
 * HuggingFaceM4/Idefics3-8B-Llama3 [MAYBE]: Requires ~24GB VRAM
 * Phi-3.5-vision-instruct (4.15B) [TRIED]: demo code out of memory on A30 (24GB) although model is 4.15B x BF16. Requires 50GB VRAM!
 * PaliGemma ?
+* florence [NO]: it doesn't support free prompt tasks, only set tasks such as global/region OCR or CAPTION.
 
 ### Adding support for a new type of VLM to this tool
 

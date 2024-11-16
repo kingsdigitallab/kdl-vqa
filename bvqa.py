@@ -20,7 +20,7 @@ from tqdm import tqdm
 # srun -p gpu -c 4 --mem 8192 --gpus-per-task 1 --constraint a100 -n 1 python describe.py -f 99945 -r
 # srun -p interruptible_gpu -c 4 --mem 8192 --gpus-per-task 1 --constraint a40 -n 2 -t 2-0:00  python describe.py
 
-VERSION = '0.1.0'
+VERSION = '0.2.0'
 # TODO: use a 'dummy' model
 DUMMY_DESCRIPTIONS = 0
 DESCRIBE_IMAGE_LOCK_TIMEOUT_IN_SECONDS = 2 * 60
@@ -194,29 +194,7 @@ class FrameQuestionAnswers:
                 self.timer.step(f'WARNING: error reading {str(qas_path)}')
                 return
 
-            meta = ret.get('meta', {})
-            if not meta:
-                ret = None
-            else:
-                version = meta.get('version', '')
-                # TODO: only for breaking changes
-                if VERSION != version:
-                    ret = None
-        
-        if not ret:
-            ret = {
-                'meta': {
-                    'started': 0,
-                    'version': VERSION,
-                },
-                'questions': {
-                    # 'frame_description': {
-                    #     'answer': 'DUMMY_DESCRIPTIONS mode is ON',
-                    #     'model': model_name,
-                    #     'hash': hash,
-                    # }
-                }
-            }
+        ret = self.upgrade_answers_format(ret)
 
         if DUMMY_DESCRIPTIONS:
             ret = None
@@ -238,21 +216,24 @@ class FrameQuestionAnswers:
                     if question:
                         question_hash = self.get_hash_from_question(question)
                         if (self.redo 
-                            or question_key not in ret['questions'] 
-                            or ret['questions'][question_key]['hash'] != question_hash
-                            or ret['questions'][question_key]['model'] != model_name
+                            or model_name not in ret['models'] 
+                            or question_key not in ret['models'][model_name]['questions']
+                            or ret['models'][model_name]['questions'][question_key]['hash'] != question_hash
                         ):
                             questions_to_ask[question_key] = question
 
                 if questions_to_ask:
                     # lock the file
                     self.save_image_descriptions(qas_path, ret)
+
                     answers = self.describer.answer_questions(str(image_path), questions_to_ask)
+
+                    if model_name not in ret['models']:
+                        ret['models'][model_name] = {'questions': {}}
                     for question_key, answer in answers.items():
-                        ret['questions'][question_key] = {
+                        ret['models'][model_name]['questions'][question_key] = {
                             'answer': answer,
-                            'model': model_name,
-                            'hash': self.get_hash_from_question(questions[question_key])
+                            'hash': self.get_hash_from_question(questions[question_key]),
                         }
                     # save and unlock
                     self.save_image_descriptions(qas_path, ret, True)
@@ -263,6 +244,53 @@ class FrameQuestionAnswers:
         if special_case:
             special_case = ' - ' + special_case
         self.timer.step(f'describe image - after {special_case}')
+
+        return ret
+
+    def upgrade_answers_format(self, answers):
+        ret = answers
+            
+        if ret:
+            meta = ret.get('meta', {})
+            if not meta:
+                ret = None
+            else:
+                version = meta.get('version', '')
+                if VERSION != version:
+                    if version == '0.1.0':
+                        # Upgarde structure
+                        # in 0.2.0 answers go under 'models'
+                        models = {}
+                        for qk, q in ret['questions'].items():
+                            if q['model'] not in models:
+                                models[q['model']] = {'questions': {}}
+                            models[q['model']]['questions'][qk] = q
+                            del q['model']
+                        ret['models'] = models
+                        del ret['questions']
+                        ret['meta']['version'] = '0.2.0'
+                    
+                    if ret['meta']['version'] != VERSION:
+                        self._error(f'No upgrade path for answer format {version} -> {VERSION}.')
+
+        if not ret:
+            ret = {
+                'meta': {
+                    'started': 0,
+                    'version': VERSION,
+                },
+                'models': {
+                    # "vikhyatk/moondream2:2024-07-23": {
+                    #     'questions': {
+                    #         'frame_description': {
+                    #             'answer': 'DUMMY_DESCRIPTIONS mode is ON',
+                    #             'model': model_name,
+                    #             'hash': hash,
+                    #         }
+                    #     }
+                    # }
+                },
+            }
 
         return ret
 

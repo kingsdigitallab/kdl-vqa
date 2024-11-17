@@ -1,0 +1,12 @@
+{
+    "susan": {
+        "long_description": ["book"],
+        "location": ["library"],
+        "objects": ["book"]    
+    },
+    "jannes": {
+        "long_description": ["play|game|sport"],
+        "location": ["park|outdoor", "-beach"],
+        "objects": ["ball", "net", "tree"] 
+    }
+}

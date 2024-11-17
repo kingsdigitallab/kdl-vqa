@@ -60,7 +60,7 @@ Such as:
 * -R to use a different root folder for your data
 * -t to run your test cases (see section below)
 
-### Reviewing (`report`)
+## Reviewing (`report`)
 
 The `report` action (`python bvqa.py report`) generates a HTML document 
 under `data/report.html` from your answer files for reviewing purpose. 
@@ -72,7 +72,7 @@ The following arguments will affect the report:
 * -f to filter which images are included the report
 * -t to only report images from our test cases
 
-### Test cases (`-t`)
+## Test cases (`-t`)
 
 `data/test_cases.json` ([see example](test/data/test_cases.json)) is a collection of test cases.
 

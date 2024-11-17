@@ -68,8 +68,9 @@ It displays your images and the answers.
 
 The following arguments will affect the report:
 * -m to only show answers by model which id or version matches on any part of given string
-* -t to only report images from our test cases
 * -q to only show the answers to the given question key(s)
+* -f to filter which images are included the report
+* -t to only report images from our test cases
 
 ### Test cases (`-t`)
 

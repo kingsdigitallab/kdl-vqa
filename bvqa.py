@@ -379,7 +379,8 @@ class FrameQuestionAnswers:
         report_path = self.get_path('report')
         data_path = self.get_path('data')
 
-        summary = '123'
+        # TODO: summary = table with accuracy % for each model vs question.
+        summary = 'TODO'
         images = ''
         i = 0
         for image_path in self.get_image_paths():
@@ -391,8 +392,10 @@ class FrameQuestionAnswers:
             if answers_path.exists():
                 answers = json.loads(answers_path.read_text())
                 for model_id, model_info in answers.get('models', {}).items():
+                    if self.model_id and self.model_id not in model_id: continue
                     images += f'<h4>{model_id}</h4>'
                     for question_key, question_info in model_info['questions'].items():
+                        if self.question_keys and question_key not in self.question_keys: continue
                         correctness = ''
                         is_correct = question_info.get('correct', None)
                         if is_correct == 0:

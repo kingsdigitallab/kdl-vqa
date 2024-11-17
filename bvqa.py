@@ -1,4 +1,5 @@
 # std lib
+import re
 import sys
 import json
 import argparse
@@ -7,7 +8,7 @@ from pathlib import Path
 # this app
 # from questions import questions
 from describer.base import ImageDescriber
-from utils.helpers import Timer, get_image_paths
+from utils.helpers import Timer, get_image_paths, _error, read_test_cases
 # third-party
 from tqdm import tqdm
 
@@ -28,6 +29,7 @@ PATH_ROOT = 'data'
 TARGET_FROM_TYPE = {
     'images': 'images',
     'questions': 'questions.json',
+    'test_cases': 'test_cases.json',
     'answers': 'answers',
     'log': 'describe.log',
 }
@@ -38,8 +40,7 @@ class FrameQuestionAnswers:
     def __init__(self):
         self.reset()
 
-    def reset(self, describer_name='moondream', model_id='', model_version='', filter='', max_images=0, redo=False, question_keys=None, optimise=False, root=PATH_ROOT):
-
+    def reset(self, describer_name='moondream', model_id='', model_version='', filter='', max_images=0, redo=False, question_keys=None, optimise=False, root=PATH_ROOT, test=False):
         self.describer = None
         self.describer_name = describer_name
         self.model_id = model_id
@@ -50,6 +51,9 @@ class FrameQuestionAnswers:
         self.redo = redo
         self.question_keys = question_keys
         self.optimise = optimise
+        self.test_cases = None
+        if test: 
+            self.test_cases = read_test_cases(self.get_path('test_cases'))
         self.timer = Timer(self.get_path('log'))
         self.get_path('answers').mkdir(parents=True, exist_ok=True)
     
@@ -87,6 +91,7 @@ class FrameQuestionAnswers:
         parser.add_argument('-r', '--redo', action='store_true', help='Always submit questions again. Disregard cache.')
         parser.add_argument('--max-images', dest='max_images', type=int, default=0, help='Number of images to describe.')
         parser.add_argument('-R', '--root', help='Path to a data folder.', default=PATH_ROOT)
+        parser.add_argument('-t', '--test', action='store_true', help='Process and test images listed in data/test_cases.json.')
         # todo
         # parser.add_argument('-s', '--settings', help='Path to a settings file.')
         # parser.add_argument('-v', '--verbose', action='store_true', help='Enable verbose mode')
@@ -102,6 +107,7 @@ class FrameQuestionAnswers:
             question_keys=self.args.question_keys,
             optimise=self.args.optimise,
             root=self.args.root,
+            test=self.args.test
         )
         self.timer.step('=' * 40)
         self.timer.step('args : ' + ' '.join(sys.argv[1:]))
@@ -134,12 +140,10 @@ class FrameQuestionAnswers:
 
         i = 0
 
-        image_paths = get_image_paths(self.get_path('images'), self.filter)
+        image_paths = get_image_paths(self.get_path('images'), self.filter, self.test_cases)
 
         for image_path in (pbar := tqdm(image_paths)):
             qas_path = self.get_path('answers') / f'{image_path.name}_{image_path.stat().st_size}.qas.json'
-
-            # pbar.set_postfix_str(qas_path.name)
 
             res = self.describe_image(image_path)
             if res:
@@ -231,10 +235,12 @@ class FrameQuestionAnswers:
                     if model_name not in ret['models']:
                         ret['models'][model_name] = {'questions': {}}
                     for question_key, answer in answers.items():
-                        ret['models'][model_name]['questions'][question_key] = {
+                        answer_info = {
                             'answer': answer,
                             'hash': self.get_hash_from_question(questions[question_key]),
                         }
+                        self.set_answer_correct(image_path, question_key, answer_info)
+                        ret['models'][model_name]['questions'][question_key] = answer_info
                     # save and unlock
                     self.save_image_descriptions(qas_path, ret, True)
                 else:
@@ -244,6 +250,48 @@ class FrameQuestionAnswers:
         if special_case:
             special_case = ' - ' + special_case
         self.timer.step(f'describe image - after {special_case}')
+
+        return ret
+
+    def set_answer_correct(self, image_path, question_key, answer_info):
+        '''
+        Sets answer_info['correct'] = 0 or 1.
+        1 if answer_info['answer'] matches the full list of conditions 
+            stored in the test_cases file for image_path and question_key.
+        0 otherwise.
+
+        A condition is a python regular expression, e.g. "tree|plant".
+        A negative condition starts with "-" (e.g. "-indoor").
+        '''
+        if not self.test_cases: return None
+
+        # One test case looks like this:
+        #
+        # "susan": {
+        #     "long_description": ["book|volumes"],
+        #     "location": ["library", "-shop"],
+        # },
+
+        ret = False
+        # TODO: avoid sequential search
+        for pattern, question_conditions in self.test_cases.items():
+            # TODO: also match against the file size
+            if pattern.lower() in str(image_path).lower():
+                conditions = question_conditions.get(question_key, [])
+                if conditions:
+                    answer = answer_info['answer']
+                    for condition in conditions:
+                        regex = condition
+                        if condition.startswith('-'):
+                            regex = regex[1:]
+                        ret = bool(re.search(regex, answer, re.IGNORECASE))
+                        if condition.startswith('-'):
+                            ret = not ret
+                        if not ret: 
+                            # print(f'incorrect: "{condition}" for "{answer}"')
+                            break
+            
+                    answer_info['correct'] = int(ret)
 
         return ret
 
@@ -307,9 +355,8 @@ class FrameQuestionAnswers:
         return question
 
     def _error(self, message):
-        print(f'ERROR: {message}')
         self.timer.step(f'ERROR: {message}')
-        exit()
+        _error(message)
 
     def action_load(self):
         '''Attempt to load the describer model.'''

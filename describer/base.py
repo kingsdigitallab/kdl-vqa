@@ -26,16 +26,6 @@ class ImageDescriber:
         See other modules in this package."""
         ret = None
 
-        # for module_path in Path(__file__).parent.rglob('*.py'):
-        #     if module_path.stem in ['__init__', 'base']: continue
-        #     module = importlib.import_module('describer.' + module_path.stem)
-        #     new_describer = getattr(module, NEW_DESCRIBER_FUNCTION_NAME, None)
-        #     if new_describer:
-        #         ret = module.new_describer(model_name)
-        #         if ret: break
-        #     else:
-        #         print(f'WARNING: {NEW_DESCRIBER_FUNCTION_NAME}() not found in {module_path.name}')
-
         if (Path(__file__).parent / Path(describer_name + '.py')).exists():
             module = importlib.import_module('describer.' + describer_name)
             for member_name in dir(module):

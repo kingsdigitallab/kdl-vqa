@@ -380,6 +380,7 @@ class FrameQuestionAnswers:
         data_path = self.get_path('data')
 
         # TODO: summary = table with accuracy % for each model vs question.
+        # Could also summarise the time. See gh-10
         summary = 'TODO'
         images = ''
         i = 0

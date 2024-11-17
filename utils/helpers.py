@@ -15,13 +15,17 @@ class Timer:
 
     def step(self, title=''):
         t = time.time()
-        message = f'{t-self.t0:8.2f} {t-self.tn:8.2f} {title}'
+        # message = f'{t-self.t0:8.2f} {t-self.tn:8.2f} {title}'
+        message = f'{t-self.tn:8.2f} {title}'
         self._log(message)
         self.tn = t
 
+    def get_time_since_reset(self):
+        return time.time() - self.t0
+
     def _log(self, message):
         if self.log_path:
-            now = datetime.datetime.now(datetime.timezone.utc).isoformat()
+            now = datetime.datetime.now(datetime.timezone.utc).isoformat(timespec='seconds')
             with Path(self.log_path).open(mode='at') as fh:
                 fh.write(f'{now} {message}\n')
         else:

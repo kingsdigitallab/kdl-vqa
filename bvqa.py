@@ -112,11 +112,15 @@ class FrameQuestionAnswers:
             test=self.args.test
         )
         self.timer.step('=' * 40)
-        self.timer.step('args : ' + ' '.join(sys.argv[1:]))
+        command_line = ' '.join(sys.argv[1:])
+        self.timer.step(f'args : {command_line}')
 
         action = actions.get(self.args.action, None)
         if action:
             action['method']()
+        
+        total_time = self.timer.get_time_since_reset()
+        self.timer.step(f'DONE ({total_time:.2f} s.) - {command_line}')
 
     def _get_actions_info(self):
         ret = {}
@@ -152,7 +156,7 @@ class FrameQuestionAnswers:
                     self.timer.step(f'INFO: stop after {self.max_images} images.')
                     break
 
-        self.timer.step(f'DONE - described {i} images')
+        self.timer.step(f'described {i} images')
 
     def get_answer_path(self, image_path):
         return self.get_path('answers') / f'{image_path.name}_{image_path.stat().st_size}.qas.json'

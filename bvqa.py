@@ -27,11 +27,13 @@ DUMMY_DESCRIPTIONS = 0
 DESCRIBE_IMAGE_LOCK_TIMEOUT_IN_SECONDS = 2 * 60
 PATH_ROOT = 'data'
 TARGET_FROM_TYPE = {
+    'data': '.',
     'images': 'images',
     'questions': 'questions.json',
     'test_cases': 'test_cases.json',
     'answers': 'answers',
     'log': 'describe.log',
+    'report': 'report.html',
 }
 
 
@@ -66,7 +68,7 @@ class FrameQuestionAnswers:
         self.describer = ret
         return ret
 
-    def get_path(self, type):
+    def get_path(self, type) -> Path:
         assert(type in TARGET_FROM_TYPE)
         return self.root_path / TARGET_FROM_TYPE[type]
 
@@ -140,10 +142,8 @@ class FrameQuestionAnswers:
 
         i = 0
 
-        image_paths = get_image_paths(self.get_path('images'), self.filter, self.test_cases)
-
-        for image_path in (pbar := tqdm(image_paths)):
-            qas_path = self.get_path('answers') / f'{image_path.name}_{image_path.stat().st_size}.qas.json'
+        for image_path in (pbar := tqdm(self.get_image_paths())):
+            qas_path = self.get_answer_path(image_path)
 
             res = self.describe_image(image_path)
             if res:
@@ -154,6 +154,15 @@ class FrameQuestionAnswers:
 
         self.timer.step(f'DONE - described {i} images')
 
+    def get_answer_path(self, image_path):
+        return self.get_path('answers') / f'{image_path.name}_{image_path.stat().st_size}.qas.json'
+
+    def get_image_paths(self):
+        return get_image_paths(
+            self.get_path('images'), 
+            self.filter, 
+            self.test_cases
+        )
 
     def action_clear(self):
         '''Removes all answer files'''
@@ -363,6 +372,67 @@ class FrameQuestionAnswers:
         describer = self.new_describer()
         info = describer.get_compute_info()
         print(info)
+
+    def action_report(self):
+        # TODO: Need to refactor this very ugly code.
+        # Use template or and externatlise to improve readability.
+        report_path = self.get_path('report')
+        data_path = self.get_path('data')
+
+        summary = '123'
+        images = ''
+        i = 0
+        for image_path in self.get_image_paths():
+            i += 1
+            images += '<div>'
+            images += f'<h3>{i}. {image_path.relative_to(data_path)}</h3>'
+            images += f'<img src="{image_path.relative_to(report_path.parent)}">'
+            answers_path = self.get_answer_path(image_path)
+            if answers_path.exists():
+                answers = json.loads(answers_path.read_text())
+                for model_id, model_info in answers.get('models', {}).items():
+                    images += f'<h4>{model_id}</h4>'
+                    for question_key, question_info in model_info['questions'].items():
+                        correctness = ''
+                        is_correct = question_info.get('correct', None)
+                        if is_correct == 0:
+                            correctness = '<span class="incorrect">[WRONG]</span>'
+                        if is_correct == 1:
+                            correctness = '<span class="correct">[RIGHT]</span>'
+                        images += f'<p><span class="question-key">{question_key}</span>: {correctness} {question_info['answer']}</p>'
+
+            images += '</div>'
+
+        # TODO: improve HTML format, and move template to external file
+        content = ('''
+        <html>
+        <head>
+            <title>Report - BVQA</title>
+            <style>
+            img {
+                height: 10em;
+            }
+            .question-key {
+                font-weight: bold;
+            }
+            .correct {
+                background-color: lightgreen;
+            }
+            .incorrect {
+                background-color: pink;
+            }
+            </style>
+        </head>
+        <body>
+            <h2>Summary</h2>''' +
+        summary +
+        '''<h2>Images</h2>''' +
+        images +
+        '''
+        </body>
+        </html>''')
+        report_path.write_text(content)
+
 
 if __name__ == '__main__':
     # Code to execute only when run as a script

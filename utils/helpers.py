@@ -47,8 +47,6 @@ def get_image_paths(root_path, path_filter=None, test_cases=None) -> list[Path]:
     if path_filter:
         patterns_set.append([path_filter])
     
-    print(patterns_set)
-
     for patterns in patterns_set:
         patterns = '|'.join([
             re.escape(pattern)

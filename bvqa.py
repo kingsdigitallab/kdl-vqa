@@ -416,7 +416,8 @@ class FrameQuestionAnswers:
                             stats[model_id] = {}
                         if question_key not in stats[model_id]:
                             stats[model_id][question_key] = {'correct': 0, 'total': 0}
-                        stats[model_id][question_key]['total'] += 1
+                        if is_correct is not None:
+                            stats[model_id][question_key]['total'] += 1
                         if is_correct == 1:
                             stats[model_id][question_key]['correct'] += 1
 

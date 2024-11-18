@@ -49,8 +49,12 @@ class Ollama(ImageDescriber):
         if not self.model:
             self._init_model()
 
+        model_arg = self.model_id
+        if self.model_version:
+            model_arg = f'{self.model_id}:{self.model_version}'
+
         response = self.model.chat(
-            model=MODEL_ID,
+            model=model_arg,
             messages=[{
                 'role': 'user',
                 'content': question,

@@ -203,6 +203,36 @@ default model, decent responses for general questions, quite fast, even on CPU. 
 * VRAM: 16GB
 * A30: 7 to 40s / qst
 
+#### [ollama](https://ollama.com/)
+
+This describer sends questions to an Ollama instance.
+Ollama is a model engine that runs as a service 
+on the local or a remote machine.
+
+The default model is [llama3.2-vision:11b](https://ollama.com/library/llama3.2-vision:11b). 
+You can use a different model and version with the `-m` and `-v` arguments.
+List of [VLMs supported by Ollama](https://ollama.com/search?c=vision).
+
+Check the ollama website to learn how to install it 
+and download models.
+
+Note that bqva communicate with Ollama on port 11435.
+Ollama, by default, listens on port 11434.
+Use `ssh -L 11435:H:11434` to connect the two 
+(where H is the host Ollama is running from).
+
+Ollama is very simple to install, 
+it allows you to work from your local machine 
+and offload the compute to a remote GPU.
+It also greatly simplifies the dependencies for bqva.
+Another benefit is that it comes with many quantised models
+for efficient execution on more modest compute.
+
+One disadvantage of Ollama is that it only support a few
+VLMs currently and lags behind huggingface. 
+For instance the Moondream model on Ollama is 5 month behind the one hugging face.
+
+
 ### Non supported models
 
 Regularly check [Huggingface VLM leaderboard](https://huggingface.co/spaces/opencompass/open_vlm_leaderboard) and [OpenCompass Leaderboard](https://mmbench.opencompass.org.cn/leaderboard) for new candidates.

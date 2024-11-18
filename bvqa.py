@@ -393,13 +393,15 @@ class FrameQuestionAnswers:
             i += 1
             images += '<div>'
             images += f'<h3>{i}. {image_path.relative_to(data_path)}</h3>'
-            images += f'<img src="{image_path.relative_to(report_path.parent)}">'
+            image_relative_path = image_path.relative_to(report_path.parent)
+            images += f'<a href="{image_relative_path}"><img src="{image_relative_path}"></a>'
             answers_path = self.get_answer_path(image_path)
             if answers_path.exists():
                 answers = json.loads(answers_path.read_text())
                 for model_id, model_info in answers.get('models', {}).items():
                     if self.model_id and self.model_id not in model_id: continue
                     images += f'<h4>{model_id}</h4>'
+                    images += '<ul>'
                     for question_key, question_info in model_info['questions'].items():
                         if self.question_keys and question_key not in self.question_keys: continue
                         correctness = ''
@@ -408,7 +410,7 @@ class FrameQuestionAnswers:
                             correctness = '<span class="incorrect">[WRONG]</span>'
                         if is_correct == 1:
                             correctness = '<span class="correct">[RIGHT]</span>'
-                        images += f'<p><span class="question-key">{question_key}</span>: {correctness} {question_info["answer"]}</p>'
+                        images += f'<li><span class="question-key">{question_key}</span>: {correctness} {question_info["answer"]}</li>'
 
                         if model_id not in stats:
                             stats[model_id] = {}
@@ -417,6 +419,8 @@ class FrameQuestionAnswers:
                         stats[model_id][question_key]['total'] += 1
                         if is_correct == 1:
                             stats[model_id][question_key]['correct'] += 1
+
+                    images += '</ul>'
 
             images += '</div>'
 

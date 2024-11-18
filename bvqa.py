@@ -379,13 +379,14 @@ class FrameQuestionAnswers:
 
     def action_report(self):
         # TODO: Need to refactor this very ugly code.
-        # Use template or and externatlise to improve readability.
+        # Use template or and externalise to improve readability.
         report_path = self.get_path('report')
         data_path = self.get_path('data')
 
         # TODO: summary = table with accuracy % for each model vs question.
         # Could also summarise the time. See gh-10
-        summary = 'TODO'
+        summary = ''
+        stats = {}
         images = ''
         i = 0
         for image_path in self.get_image_paths():
@@ -407,9 +408,23 @@ class FrameQuestionAnswers:
                             correctness = '<span class="incorrect">[WRONG]</span>'
                         if is_correct == 1:
                             correctness = '<span class="correct">[RIGHT]</span>'
-                        images += f'<p><span class="question-key">{question_key}</span>: {correctness} {question_info['answer']}</p>'
+                        images += f'<p><span class="question-key">{question_key}</span>: {correctness} {question_info["answer"]}</p>'
+
+                        if model_id not in stats:
+                            stats[model_id] = {}
+                        if question_key not in stats[model_id]:
+                            stats[model_id][question_key] = {'correct': 0, 'total': 0}
+                        stats[model_id][question_key]['total'] += 1
+                        if is_correct == 1:
+                            stats[model_id][question_key]['correct'] += 1
 
             images += '</div>'
+
+        for model_id, model_info in stats.items():
+            summary += f'<h3>{model_id}</h3>'
+            for question_key, question_info in model_info.items():
+                accuracy = question_info['correct'] / question_info['total']
+                summary += f'<p>{question_key}: {accuracy * 100:.1f}% ({question_info["correct"]} / {question_info["total"]})</p>'
 
         # TODO: improve HTML format, and move template to external file
         content = ('''

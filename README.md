@@ -1,19 +1,21 @@
 # Batch visual question answering (BVQA)
 
 This python command line tool lets you ask a series of questions 
-to a visual language model about a collection of images.
+to a visual language model (VLM) about a collection of images.
 It saves the answers in json files (one file per image).
 
 ## Features
 
-* suppport for parallel processing
-  * simply start additional instances on same image collection
-  * can resume processing after abrupt interruption
-  * tested on SLURM environment (KCL ER HPC)
-* designed to work with different vision language models
-  * which also allows to compare/benchmark different models
-* granual caching: only ask question again if prompt or model has changed
-* [coming soon] export answers to HTML for manual review
+* suppport for **parallel processing**
+  * as simple as launching additional instances of the tool
+  * can resume processing after interruption
+  * tested on SLURM HPC environment over 60k images
+* designed to work with **different vision language models**
+  * easy to swap in and out
+  * objectively compare different models and select the most appropriate for your task
+* granual **caching**: only ask question again if prompt or model has changed
+* **reporting**: export images and answers to a web page for manual review
+* **test cases**: write your test cases (image, question -> expected answer) to automate evaluation of prompt and model performance
 
 ## Requirements
 
@@ -26,12 +28,12 @@ Although a GPU is not mandatory for the moondream model, processing will be very
 
 ## Usage
 
-By default the root folder for all the input and output is /data.
+By default the root folder for all the input and output is ./data.
 
 ### Prepare your input
 
-* **/data/images**: copy your input images (*.jpg) anywhere under that folder
-* **/data/questions.json**: your questions (see example in [/test/data/questions.json](/test/data/questions.json))
+* **./data/images**: copy your input images (*.jpg) anywhere under that folder
+* **./data/questions.json**: your questions (see example in [/test/data/questions.json](/test/data/questions.json))
 
 ### Generate descriptions
 
@@ -39,14 +41,14 @@ By default the root folder for all the input and output is /data.
 
 ### Output
 
-* **/data/answers/**: contains the generated answers. Each json file contains all the answers for an image
-* **/data/describe.log**: a log of the processing for monitoring and performance purpose
+* **./data/answers/**: contains the generated answers. Each json file contains all the answers for an image
+* **./data/describe.log**: a log of the processing for monitoring and performance purpose
 
 ## Options
 
 ### Command line
 
-For more additional options see:
+For more options see:
 
 `python bvqa.py -h`
 
@@ -235,13 +237,14 @@ Advantages of Ollama:
 * this lets you run bvaq locally within a comfortable/familiar development environemnt,
 * simplifies the local stack, keeping it light
 * Ollama comes with many quantised models for efficient execution on more modest compute
+* speeds up bvqa startup time by keeping the model in memory between runs
+* good suppoort for multiple types of computes (including hybrid, e.g. CPU + GPU)
 
 Disadvatanges:
 
 * it only supports a few VLMs and lags behind huggingface
 * e.g. Moondream on Ollama is 6 month behind latest version
-* splitting the system in two parts, bvqa and ollama, is not HPC-friendly
-* **it's not clear how the model computation can be distributed on HPC** (TODO)
+* complicates prallel/distributed processing over multiple machines (because we need to run multiple ollama services)
 
 [Ollama can be installed & instantiated manually without sudo](https://github.com/ollama/ollama/blob/main/docs/linux.md#manual-install).
 

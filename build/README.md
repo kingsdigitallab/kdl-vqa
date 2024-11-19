@@ -1,7 +1,7 @@
 ## Modular python requirements
 
 ```bash
-# On HP only: load python module, something like
+# On HPC only: load python module, something like
 module load python/3.11.6-gcc-13.2.0
 
 # create the environement
@@ -14,6 +14,7 @@ srun -p interruptible_gpu --pty bash
 # install basic requirements for the vqa script
 pip install -r build/requirements.txt
 
-# install requirements for the moondream model
+# install requirements for the moondream describer (change moondream to the required describer)
 pip install -r build/requirements-moondream.txt
+
 ```

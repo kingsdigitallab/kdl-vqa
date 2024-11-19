@@ -220,7 +220,7 @@ However the VRAM requirement can be very high, especially on larger images.
 
 This describer sends questions to an Ollama instance.
 Ollama loads and runs (vision) language models in a separate on the same or remote machine.
-bqva sends prompts to Ollama via its web API.
+bvqa sends prompts to Ollama via its web API.
 
 The default model in the ollama describer is [llama3.2-vision:11b](https://ollama.com/library/llama3.2-vision:11b). 
 You can use a different model and version with the `-m` and `-v` arguments.
@@ -229,7 +229,7 @@ List of [VLMs supported by Ollama](https://ollama.com/search?c=vision&o=newest).
 Consult the ollama website to learn how to install it 
 and download models.
 
-Note that bqva communicate with Ollama on port 11435.
+Note that bvqa communicate with Ollama on port 11435.
 Ollama, by default, listens on port 11434.
 Use `ssh -L 11435:H:11434` to connect the two 
 (where H is the host Ollama is running from).

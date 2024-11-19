@@ -14,7 +14,7 @@ It saves the answers in json files (one file per image).
   * easy to swap in and out
   * objectively compare different models and select the most appropriate for your task
 * granual **caching**: only ask question again if prompt or model has changed
-* **reporting**: export images and answers to a web page for manual review
+* **reporting**: export images and answers to a web page for manual review by non-technical people (e.g. domain experts)
 * **test cases**: write your test cases (image, question -> expected answer) to automate evaluation of prompt and model performance
 
 ## Requirements

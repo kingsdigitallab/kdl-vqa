@@ -198,22 +198,29 @@ default model, decent responses for general questions, quite fast, even on CPU. 
 * **Harder to install dependencies**
 * generally quite good at "focused" OCR/HTR 
 * able to work on any image resolution (no downsizing)
-* Tried the int4 ~5 x slower than MD by default. With higher mem consumption.
+* Tried the int4 ~5 x slower than MD by default. With higher mem consumption
+
+We got noticably better results on form understanding with the 7b+ model than the 2b.
+However the VRAM requirement can be very high, especially on larger images.
+
+2b model:
 
 * VRAM: 16GB
 * A30: 7 to 40s / qst
 
+7b model:
+
 #### [ollama](https://ollama.com/)
 
 This describer sends questions to an Ollama instance.
-Ollama is a model engine that runs as a service 
-on the local or a remote machine.
+Ollama loads and runs (vision) language models in a separate on the same or remote machine.
+bqva sends prompts to Ollama via its web API.
 
-The default model is [llama3.2-vision:11b](https://ollama.com/library/llama3.2-vision:11b). 
+The default model in the ollama describer is [llama3.2-vision:11b](https://ollama.com/library/llama3.2-vision:11b). 
 You can use a different model and version with the `-m` and `-v` arguments.
-List of [VLMs supported by Ollama](https://ollama.com/search?c=vision).
+List of [VLMs supported by Ollama](https://ollama.com/search?c=vision&o=newest).
 
-Check the ollama website to learn how to install it 
+Consult the ollama website to learn how to install it 
 and download models.
 
 Note that bqva communicate with Ollama on port 11435.
@@ -221,23 +228,51 @@ Ollama, by default, listens on port 11434.
 Use `ssh -L 11435:H:11434` to connect the two 
 (where H is the host Ollama is running from).
 
-Ollama is very simple to install, 
-it allows you to work from your local machine 
-and offload the compute to a remote GPU.
-It also greatly simplifies the dependencies for bqva.
-Another benefit is that it comes with many quantised models
-for efficient execution on more modest compute.
+Advantages of Ollama:
 
-One disadvantage of Ollama is that it only support a few
-VLMs currently and lags behind huggingface. 
-For instance the Moondream model on Ollama is 5 month behind the one hugging face.
+* Ollama is straightforward to install
+* it can run remotely by offloading the heavy model computation to a remote GPU
+* this lets you run bvaq locally within a comfortable/familiar development environemnt,
+* simplifies the local stack, keeping it light
+* Ollama comes with many quantised models for efficient execution on more modest compute
 
+Disadvatanges:
+
+* it only supports a few VLMs and lags behind huggingface
+* e.g. Moondream on Ollama is 6 month behind latest version
+* splitting the system in two parts, bvqa and ollama, is not HPC-friendly
+* **it's not clear how the model computation can be distributed on HPC** (TODO)
+
+[Ollama can be installed & instantiated manually without sudo](https://github.com/ollama/ollama/blob/main/docs/linux.md#manual-install).
+
+TODO: for parallelism a sbatch should provided to launch ollama on unique port and pass it to bvqa.
+
+#### [llama3.2-vision ](https://ollama.com/library/llama3.2-vision)
+
+Supported via the ollama describer.
+Good at following more precise instructions.
+
+11b (4bits):
+
+* Downsampling: max  1120x1120 pixels
+* Minimum GPU VRAM: 12GB
+* Context: 128k
+* Output tokens: 2048
+
+#### [minicpm-v](https://ollama.com/library/minicpm-v)
+
+Supported via the ollama describer.
+
+MiniCPM-V 2.6, 8b:
+
+* Downsampling: any aspect ratio and up to 1.8 million pixels (e.g., 1344x1344).
+* Minimum GPU VRAM: 7GB
+* Context: ?
 
 ### Non supported models
 
 Regularly check [Huggingface VLM leaderboard](https://huggingface.co/spaces/opencompass/open_vlm_leaderboard) and [OpenCompass Leaderboard](https://mmbench.opencompass.org.cn/leaderboard) for new candidates.
 
-* llama3.2-11B-Vision-Instruct [MAYBE]: worth trying.
 * llava-next [MAYBE]: 0.5b needs access to gated llama-3-8b model on HF
 * Vila [MAYBE]: docker not building, can't find instructions on how to run model with python
 * HuggingFaceM4/Idefics3-8B-Llama3 [MAYBE]: Requires ~24GB VRAM
@@ -246,8 +281,6 @@ Regularly check [Huggingface VLM leaderboard](https://huggingface.co/spaces/open
 * florence [NO]: it doesn't support free prompt tasks, only set tasks such as global/region OCR or CAPTION.
 
 ### Adding support for a new type of VLM to this tool
-
-[TODO]
 
 In short, you would need to create a new describer module and class under /describer package. 
 It should extend from ImageDescriber (in describe/base.py) and implement answer_question() and _init_model().

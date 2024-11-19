@@ -4,7 +4,7 @@ This python command line tool lets you ask a series of questions
 to a visual language model (VLM) about a collection of images.
 It saves the answers in json files (one file per image).
 
-Early prototype developped by [King's Digital Lab](kdl.kcl.ac.uk).
+Early prototype developped by [King's Digital Lab](https://kdl.kcl.ac.uk).
 
 ## Features
 

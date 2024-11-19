@@ -191,7 +191,7 @@ It aways mean reassessing the answers and often means reformulating many questio
 
 #### [moondream](https://huggingface.co/vikhyatk/moondream2) (1.87b, FP16)
 
-default model, decent responses for general questions, quite fast, even on CPU. Speed: ~9s/question/image on i9 CPU. ~1.7s/q/i on 1080ti (~5x faster; 72s for 2 img x 21 qst). Deterministic.
+default model, decent responses for general questions, quite fast, even on CPU. Deterministic.
 
 * Downsampling: max 756 pixels any side
 * Minimum GPU VRAM: 8GB
@@ -204,7 +204,7 @@ default model, decent responses for general questions, quite fast, even on CPU. 
 * **Harder to install dependencies**
 * generally quite good at "focused" OCR/HTR 
 * able to work on any image resolution (no downsizing)
-* Tried the int4 ~5 x slower than MD by default. With higher mem consumption
+* Tried the int4, ~5 x slower than moondream by default. With higher mem consumption
 
 We got noticably better results on form understanding with the 7b+ model than the 2b.
 However the VRAM requirement can be very high, especially on larger images.
@@ -215,6 +215,9 @@ However the VRAM requirement can be very high, especially on larger images.
 * A30: 7 to 40s / qst
 
 7b model:
+
+* VRAM: >40GB
+* A30: ?
 
 #### [ollama](https://ollama.com/)
 
@@ -238,7 +241,7 @@ Advantages of Ollama:
 
 * Ollama is straightforward to install
 * it can run remotely by offloading the heavy model computation to a remote GPU
-* this lets you run bvaq locally within a comfortable/familiar development environemnt,
+* this lets you run bvqa locally within a comfortable/familiar development environemnt,
 * simplifies the local stack, keeping it light
 * Ollama comes with many quantised models for efficient execution on more modest compute
 * speeds up bvqa startup time by keeping the model in memory between runs
@@ -275,6 +278,7 @@ MiniCPM-V 2.6, 8b:
 * Downsampling: any aspect ratio and up to 1.8 million pixels (e.g., 1344x1344).
 * Minimum GPU VRAM: 7GB
 * Context: ?
+* Output tokens: ?
 
 ### Non supported models
 

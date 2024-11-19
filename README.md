@@ -19,6 +19,8 @@ Early prototype developped by [King's Digital Lab](https://kdl.kcl.ac.uk).
 * **reporting**: export images and answers to a web page for manual review by non-technical people (e.g. domain experts)
 * **test cases**: write your test cases (image, question -> expected answer) to automate evaluation of prompt and model performance
 
+![Workflow](doc/bvqa-workflow.jpg)
+
 ## Requirements
 
 Follow the [build instructions](build/README.md).

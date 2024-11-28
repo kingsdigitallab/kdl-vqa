@@ -284,7 +284,8 @@ MiniCPM-V 2.6, 8b:
 
 Regularly check [Huggingface VLM leaderboard](https://huggingface.co/spaces/opencompass/open_vlm_leaderboard) and [OpenCompass Leaderboard](https://mmbench.opencompass.org.cn/leaderboard) for new candidates.
 
-* llava-next [MAYBE]: 0.5b needs access to gated llama-3-8b model on HF
+* [SmolVLM-Instruct](https://huggingface.co/HuggingFaceTB/SmolVLM-Instruct) (2B, HF): looks like a possible alternative to Moondream2. Certainly worth trying.
+* llava-next [NO]: 0.5b needs access to gated llama-3-8b model on HF
 * Vila [MAYBE]: docker not building, can't find instructions on how to run model with python
 * HuggingFaceM4/Idefics3-8B-Llama3 [MAYBE]: Requires ~24GB VRAM
 * Phi-3.5-vision-instruct (4.15B) [TRIED]: demo code out of memory on A30 (24GB) although model is 4.15B x BF16. Requires 50GB VRAM!

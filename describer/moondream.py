@@ -53,6 +53,7 @@ class Moondream(ImageDescriber):
             'image_path': None,
             'image_encoding': None,
         }
+        self.device = None
 
     def answer_question(self, image_path, question):
         if not self.model:
@@ -69,17 +70,37 @@ class Moondream(ImageDescriber):
         import torch
         self.model = None
 
-        is_cuda_available = torch.cuda.is_available()
-        if is_cuda_available:
-            try:
-                self._new_model(use_cuda=True, use_attention=self.optimise)
-            except torch.cuda.OutOfMemoryError as e:
-                print('WARNING: Model exceeds VRAM')
-            except RuntimeError as e:
-                print(f'WARNING: Unknown error while using CUDA: "{e}"')
+        def _device_available(device_type):
+            if device_type == "cuda":
+                return torch.cuda.is_available()
+            elif device_type == "mps":
+                return torch.backends.mps.is_available()
 
+        if _device_available("cuda"):
+            self.device = torch.device("cuda")
+            print(f'Initializing model on {self.device.type}')
+            try:
+                self._new_model(use_attention=self.optimise)
+            except torch.cuda.OutOfMemoryError as e:
+                print(f'WARNING: Model exceeds VRAM on CUDA: "{e}"')
+            except RuntimeError as e:
+                print(f'ERROR: Unknown error while using CUDA: "{e}"')
+
+        elif _device_available("mps"):
+            self.device = torch.device("mps")
+            print(f'Initializing model on {self.device.type}')
+            try:
+                self._new_model()
+            except RuntimeError as e:
+                if "out of memory" in str(e).lower(): # No specific OOM exception for MPS
+                    print(f'ERROR: Model exceeds VRAM on MPS: "{e}"')
+                else:
+                    print(f'ERROR: Unknown error while using MPS: "{e}"')
+
+        # Fallback for CPU
         if self.model is None:
-            print('WARNING: running model on CPU')
+            self.device = torch.device("cpu")
+            print(f'WARNING: Initializing model on {self.device.type}')
             self._new_model()
 
         # why no .to(X) ?
@@ -88,7 +109,7 @@ class Moondream(ImageDescriber):
 
         return self.model
     
-    def _new_model(self, use_cuda=False, use_attention=False):
+    def _new_model(self, use_attention=False):
         from transformers import AutoModelForCausalLM
         import torch
 
@@ -96,12 +117,12 @@ class Moondream(ImageDescriber):
             self.model_id,
             trust_remote_code=True,
             revision=self.model_version,    
-            device_map="cuda" if use_attention else None,
-            torch_dtype = torch.float16 if use_cuda else None,
+            device_map=self.device if use_attention else None,
+            torch_dtype = torch.float16 if self.device.type in {"cuda", "mps"} else None,
             attn_implementation = "flash_attention_2" if use_attention else None
         )
-        if use_cuda and not use_attention:
-            self.model = self.model.to("cuda")
+        if self.device.type in {"cuda", "mps"} and not use_attention:
+            self.model = self.model.to(self.device)
         
     def _encode_image(self, image_path):
         pass

@@ -1,7 +1,10 @@
 transformers
 einops
 pillow
+# Apple Silicon (ARM64) Macs
+torch ; sys_platform == 'darwin' and platform_machine == 'arm64'
+torchvision ; sys_platform == 'darwin' and platform_machine == 'arm64'
+-f https://download.pytorch.org/whl/metal.html
+# All other platforms (Intel Macs, Linux, Windows)
 torch
 torchvision
-# torchaudio
-# timm

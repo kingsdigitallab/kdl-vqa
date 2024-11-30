@@ -83,19 +83,32 @@ class SmolVLM(ImageDescriber):
             self._new_model()
 
         # why no .to(X) ?
+        '''
+        TODO: "Adjust the image resolution by setting size={"longest_edge": N*384} 
+        when initializing the processor, where N is your desired value. 
+        The default N=4 works well, which results in input images of size 1536×1536. 
+        For documents, N=5 might be beneficial. 
+        Decreasing N can save GPU memory and is appropriate for lower-resolution images. 
+        This is also useful if you want to fine-tune on videos.
+        '''
         from transformers import AutoProcessor
         self.processor = AutoProcessor.from_pretrained(self.model_id)
 
         return self.model
     
     def _new_model(self, use_cuda=False, use_attention=False):
-        from transformers import AutoModelForVision2Seq
+        from transformers import AutoModelForVision2Seq, BitsAndBytesConfig
         import torch
+
+        if use_cuda:
+            # pip install -U accelerate bitsandbytes
+            quantization_config = BitsAndBytesConfig(load_in_8bit=True)
 
         self.model = AutoModelForVision2Seq.from_pretrained(
             self.model_id,
-            torch_dtype=torch.bfloat16,
+            # torch_dtype=torch.float16,
             _attn_implementation="flash_attention_2" if use_attention else "eager",
+            quantization_config=quantization_config
         )
         if use_cuda:
             self.model = self.model.to("cuda")

@@ -428,7 +428,9 @@ class FrameQuestionAnswers:
         for model_id, model_info in stats.items():
             summary += f'<h3>{model_id}</h3>'
             for question_key, question_info in model_info.items():
-                accuracy = question_info['correct'] / question_info['total']
+                accuracy = 0
+                if question_info['total']:
+                    accuracy = question_info['correct'] / question_info['total']
                 summary += f'<p>{question_key}: {accuracy * 100:.1f}% ({question_info["correct"]} / {question_info["total"]})</p>'
 
         # TODO: improve HTML format, and move template to external file

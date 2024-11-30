@@ -8,6 +8,7 @@ Early prototype developped by [King's Digital Lab](https://kdl.kcl.ac.uk).
 
 ## Features
 
+* supported models: Moondream2, SmolVLM, Qwen2-vl, Ollama vision models (e.g. LLama3.2, minicpm-v 2.6)
 * suppport for **parallel processing**
   * as simple as launching additional instances of the tool
   * can resume processing after interruption
@@ -191,12 +192,45 @@ It aways mean reassessing the answers and often means reformulating many questio
 
 #### [moondream](https://huggingface.co/vikhyatk/moondream2) (1.87b, FP16)
 
-default model, decent responses for general questions, quite fast, even on CPU. Deterministic.
+Default model, decent responses for general questions, quite fast, even on CPU. Deterministic.
 
 * Downsampling: max 756 pixels any side
-* Minimum GPU VRAM: 8GB
+* Minimum GPU VRAM: 4.5GB
 * CPU (i7 12th gen, 16 cpus): 5 to 40s / question (short to long)
 * A30: 1 to 9s / qst
+
+Pros:
+* very small, fast and robust
+* good for general purpose questions
+* good at counting
+* trained for OCR
+
+Cons:
+* No chat mode? (i.e. pass one image & question, then add more questions)
+* Very keen to provide general/contextual descriptions despite instructions to focus on particular element in the image
+
+#### [Smol](https://huggingface.co/HuggingFaceTB/SmolVLM-Instruct)
+
+Alternative to Moondream as it's only slightly bigger.
+
+* Downsampling: max 1536 pixels any side (N=5 for N*384, N can be adjusted)
+* Minimum GPU VRAM: 6.2GB
+* CPU (i7 12th gen, 16 cpus): 
+* A30: 
+
+Pros:
+* can be very good at detailed description
+
+Cons:
+* prone to repetition with default settings
+* can make up details when asked for long description and there's nothing new to say
+
+TODO:
+* test on film frames
+* test on OCR/forms
+* optimise for CPU
+* support for 4bits
+* test chat mode
 
 #### [qwen-vl](https://huggingface.co/Qwen/Qwen2-VL-2B-Instruct-GPTQ-Int4) (1.07B)
 

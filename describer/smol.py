@@ -58,7 +58,7 @@ class SmolVLM(ImageDescriber):
 
         # Generate outputs
         generated_ids = self.model.generate(**inputs, max_new_tokens=MAX_NEW_TOKENS)
-        generated_texts = processor.batch_decode(
+        generated_texts = self.processor.batch_decode(
             generated_ids,
             skip_special_tokens=True,
         )

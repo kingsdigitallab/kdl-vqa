@@ -100,13 +100,16 @@ class SmolVLM(ImageDescriber):
         from transformers import AutoModelForVision2Seq, BitsAndBytesConfig
         import torch
 
-        if use_cuda:
+        quantization_config = None
+        if 0 and use_cuda:
+            # 8bit mode uses less VRAM. But it is 4x slower than bfloat16 on 1080ti
+            # Also it repeats itself.
             # pip install -U accelerate bitsandbytes
             quantization_config = BitsAndBytesConfig(load_in_8bit=True)
 
         self.model = AutoModelForVision2Seq.from_pretrained(
             self.model_id,
-            # torch_dtype=torch.float16,
+            # torch_dtype=torch.bfloat16,
             _attn_implementation="flash_attention_2" if use_attention else "eager",
             quantization_config=quantization_config
         )

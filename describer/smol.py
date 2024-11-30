@@ -110,7 +110,7 @@ class SmolVLM(ImageDescriber):
             _attn_implementation="flash_attention_2" if use_attention else "eager",
             quantization_config=quantization_config
         )
-        if use_cuda:
+        if use_cuda and not quantization_config:
             self.model = self.model.to("cuda")
         
     def _encode_image(self, image_path):

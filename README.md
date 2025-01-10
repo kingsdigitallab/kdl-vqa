@@ -325,6 +325,7 @@ MiniCPM-V 2.6, 8b:
 Regularly check [Huggingface VLM leaderboard](https://huggingface.co/spaces/opencompass/open_vlm_leaderboard) and [OpenCompass Leaderboard](https://mmbench.opencompass.org.cn/leaderboard) for new candidates.
 
 * [molmo](https://molmoai.com/#features): open source trained on well curated dataset with good general understanding, comes in 72b, 7b (-o is most open, -d perform better) and 1b.
+* [InternVL](https://huggingface.co/collections/OpenGVLab/internvl25-673e1019b66e2218f68d7c1c): v. good performance in benchmarks
 * llava-next [NO]: 0.5b needs access to gated llama-3-8b model on HF
 * Vila [MAYBE]: docker not building, can't find instructions on how to run model with python
 * HuggingFaceM4/Idefics3-8B-Llama3 [MAYBE]: Requires ~24GB VRAM

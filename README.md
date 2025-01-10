@@ -59,7 +59,7 @@ For more options see:
 
 Such as:
 
-* -d to select a different describer (moondream or qwen-vl at the moment)
+* -d to select a different describer (e.g. moondream, qwen-vl, ollama. See section below)
 * -m to specify which exact model the describer should use (e.g. vikhyatk/moondream2)
 * -v to specify the version/revision of the model (e.g. 2024-08-26)
 * -f to filter which image is processed
@@ -190,6 +190,12 @@ It aways mean reassessing the answers and often means reformulating many questio
 
 ### Supported
 
+* Moondream2
+* SmolVLM
+* Qwen2-VL
+* LLama3.2-vision (via Ollama)
+* minicpm-v (via Ollama)
+
 #### [moondream](https://huggingface.co/vikhyatk/moondream2) (1.87b, FP16)
 
 Default model, decent responses for general questions, quite fast, even on CPU. Deterministic.
@@ -291,7 +297,7 @@ Disadvatanges:
 
 TODO: for parallelism a sbatch should provided to launch ollama on unique port and pass it to bvqa.
 
-#### [llama3.2-vision ](https://ollama.com/library/llama3.2-vision)
+#### [llama3.2-vision](https://ollama.com/library/llama3.2-vision)
 
 Supported via the ollama describer.
 Good at following more precise instructions.
@@ -318,13 +324,13 @@ MiniCPM-V 2.6, 8b:
 
 Regularly check [Huggingface VLM leaderboard](https://huggingface.co/spaces/opencompass/open_vlm_leaderboard) and [OpenCompass Leaderboard](https://mmbench.opencompass.org.cn/leaderboard) for new candidates.
 
-* [SmolVLM-Instruct](https://huggingface.co/HuggingFaceTB/SmolVLM-Instruct) (2B, HF): looks like a possible alternative to Moondream2. Certainly worth trying.
+* [molmo](https://molmoai.com/#features): open source trained on well curated dataset with good general understanding, comes in 72b, 7b (-o is most open, -d perform better) and 1b.
 * llava-next [NO]: 0.5b needs access to gated llama-3-8b model on HF
 * Vila [MAYBE]: docker not building, can't find instructions on how to run model with python
 * HuggingFaceM4/Idefics3-8B-Llama3 [MAYBE]: Requires ~24GB VRAM
 * Phi-3.5-vision-instruct (4.15B) [TRIED]: demo code out of memory on A30 (24GB) although model is 4.15B x BF16. Requires 50GB VRAM!
 * PaliGemma ?
-* florence [NO]: it doesn't support free prompt tasks, only set tasks such as global/region OCR or CAPTION.
+* florence [NO]: it doesn't support free prompt tasks, only set tasks such as global/region OCR or CAPTION
 
 ### Adding support for a new type of VLM to this tool
 

@@ -5,7 +5,7 @@ from pathlib import Path
 import datetime, time
 
 MODEL_ID = 'vikhyatk/moondream2'
-MODEL_VERSION = '2024-07-23'
+MODEL_VERSION = '2025-01-09'
 
 
 class Moondream(ImageDescriber):

@@ -164,3 +164,6 @@ cython_debug/
 # PROJECT
 /data
 /test/data/answers
+
+#Mac stuff
+.DS_Store

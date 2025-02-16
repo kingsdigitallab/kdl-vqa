@@ -11,6 +11,9 @@ MODEL_VERSION = '2025-01-09'
 MODEL_URL = 'https://huggingface.co/vikhyatk/moondream2/resolve/9dddae84d54db4ac56fe37817aeaeb502ed083e2/moondream-2b-int8.mf.gz?download=true'
 MODEL_PATH = 'models/moondream-2b-int8.mf'
 
+MODELS_DIR = 'models'
+MOONDEAM_MODEL_FILE = 'moondream-2b-int8.mf'
+
 class Moondream(ImageDescriber):
     """Image description using Moondeam2 model.
 
@@ -127,10 +130,10 @@ class Moondream(ImageDescriber):
 
         ret = False
 
-        models_dir = Path('models')
+        models_dir = Path(MODELS_DIR)
         models_dir.mkdir(parents=True, exist_ok=True)
 
-        model_path_gz = models_dir / 'moondream-2b-int8.mf.gz'
+        model_path_gz = models_dir / MOONDEAM_MODEL_FILE + '.gz'
         if not model_path_gz.exists():
             response = requests.get(MODEL_URL)
             with open(model_path_gz, 'wb') as f:

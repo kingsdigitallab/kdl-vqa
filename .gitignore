@@ -167,3 +167,4 @@ cython_debug/
 
 #Mac stuff
 .DS_Store
+.aider*

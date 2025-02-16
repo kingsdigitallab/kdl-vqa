@@ -91,12 +91,17 @@ class ImageDescriber:
 
     def get_compute_info(self) -> str:
         model = self.get_model()
-        device = next(model.parameters()).device
+        if hasattr(model, 'parameters'):
+            device = next(model.parameters()).device
 
-        ret = device
+            ret = device
 
-        if ret.type == 'cuda':
-            import torch
-            ret = f'{ret} = {torch.cuda.get_device_properties(ret.index)}'
+            if ret.type == 'cuda':
+                import torch
+                ret = f'{ret} = {torch.cuda.get_device_properties(ret.index)}'
+        else:
+            from types import SimpleNamespace
+            data = {'type': 'cpu'}
+            ret = SimpleNamespace(**data)
     
         return ret

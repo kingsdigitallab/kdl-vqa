@@ -5,14 +5,15 @@ from pathlib import Path
 import datetime, time
 import moondream as md
 
-MODEL_ID = 'vikhyatk/moondream2'
 # only used with transformers
+MODEL_ID = 'vikhyatk/moondream2'
 MODEL_VERSION = '2025-01-09'
-MODEL_URL = 'https://huggingface.co/vikhyatk/moondream2/resolve/9dddae84d54db4ac56fe37817aeaeb502ed083e2/moondream-2b-int8.mf.gz?download=true'
-MODEL_PATH = 'models/moondream-2b-int8.mf'
 
-MODELS_DIR = 'models'
-MOONDEAM_MODEL_FILE = 'moondream-2b-int8.mf'
+# only used with the CPU version of Moondream API, without transformers
+MODELS_PATH = Path('models')
+MODEL_FILE_NAME = 'moondream-2b-int8.mf'
+MODEL_URL = f'https://huggingface.co/vikhyatk/moondream2/resolve/9dddae84d54db4ac56fe37817aeaeb502ed083e2/{MODEL_FILE_NAME}.gz?download=true'
+MODEL_PATH = MODELS_PATH / MODEL_FILE_NAME
 
 class Moondream(ImageDescriber):
     """Image description using Moondeam2 model.
@@ -111,7 +112,7 @@ class Moondream(ImageDescriber):
                 self.model = self.model.to("cuda")
         else:
             self._download_model()
-            self.model = md.vl(model=MODEL_PATH)
+            self.model = md.vl(model=str(MODEL_PATH))
 
     def _download_model(self):
         # 1. create 'models' subdirectory if it doesn't exist
@@ -123,27 +124,24 @@ class Moondream(ImageDescriber):
         import requests
         import gzip
 
-        model_path = Path(MODEL_PATH)
-        if model_path.exists(): return True
-
-        print('INFO: downloading moondream model.')
-
         ret = False
 
-        models_dir = Path(MODELS_DIR)
-        models_dir.mkdir(parents=True, exist_ok=True)
+        if MODEL_PATH.exists(): return True
+        MODELS_PATH.mkdir(parents=True, exist_ok=True)
 
-        model_path_gz = models_dir / MOONDEAM_MODEL_FILE + '.gz'
+        print('INFO: downloading moondream model...')
+
+        model_path_gz = MODEL_PATH.with_suffix('.gz')
         if not model_path_gz.exists():
             response = requests.get(MODEL_URL)
             with open(model_path_gz, 'wb') as f:
                 f.write(response.content)
 
         with gzip.open(model_path_gz, 'rb') as f_in:
-            with open(model_path, 'wb') as f_out:
+            with open(MODEL_PATH, 'wb') as f_out:
                 f_out.writelines(f_in)
 
-        if not model_path.exists():
+        if not MODEL_PATH.exists():
             raise FileNotFoundError(f'Model file not found at {model_path}')
         else:
             os.remove(model_path_gz)

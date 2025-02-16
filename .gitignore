@@ -161,10 +161,12 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 .idea/
 
+.aider*
+
 # PROJECT
 /data
 /test/data/answers
+/models
 
 #Mac stuff
 .DS_Store
-.aider*

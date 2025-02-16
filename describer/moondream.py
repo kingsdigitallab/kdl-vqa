@@ -3,10 +3,13 @@ from .base import ImageDescriber
 from PIL import Image
 from pathlib import Path
 import datetime, time
+import moondream as md
 
 MODEL_ID = 'vikhyatk/moondream2'
-MODEL_VERSION = '2024-07-23'
-
+# only used with transformers
+MODEL_VERSION = '2025-01-09'
+MODEL_URL = 'https://huggingface.co/vikhyatk/moondream2/resolve/9dddae84d54db4ac56fe37817aeaeb502ed083e2/moondream-2b-int8.mf.gz?download=true'
+MODEL_PATH = 'models/moondream-2b-int8.mf'
 
 class Moondream(ImageDescriber):
     """Image description using Moondeam2 model.
@@ -63,7 +66,7 @@ class Moondream(ImageDescriber):
             image = Image.open(image_path)
             self.cache['image_encoding'] = self.model.encode_image(image)
 
-        return self.model.answer_question(self.cache['image_encoding'], question, self.tokenizer)
+        return self.model.query(self.cache['image_encoding'], question)['answer'].strip()
 
     def _init_model(self):
         import torch
@@ -83,25 +86,67 @@ class Moondream(ImageDescriber):
             self._new_model()
 
         # why no .to(X) ?
-        from transformers import AutoTokenizer
-        self.tokenizer = AutoTokenizer.from_pretrained(self.model_id, revision = self.model_version)
+        # from transformers import AutoTokenizer
+        # self.tokenizer = AutoTokenizer.from_pretrained(self.model_id, revision = self.model_version)
 
         return self.model
     
     def _new_model(self, use_cuda=False, use_attention=False):
-        from transformers import AutoModelForCausalLM
-        import torch
+        if use_cuda:
+            from transformers import AutoModelForCausalLM
+            import torch
 
-        self.model = AutoModelForCausalLM.from_pretrained(
-            self.model_id,
-            trust_remote_code=True,
-            revision=self.model_version,    
-            device_map="cuda" if use_attention else None,
-            torch_dtype = torch.float16 if use_cuda else None,
-            attn_implementation = "flash_attention_2" if use_attention else None
-        )
-        if use_cuda and not use_attention:
-            self.model = self.model.to("cuda")
+            self.model = AutoModelForCausalLM.from_pretrained(
+                self.model_id,
+                trust_remote_code=True,
+                revision=self.model_version,    
+                device_map="cuda" if use_attention else None,
+                torch_dtype = torch.float16 if use_cuda else None,
+                attn_implementation = "flash_attention_2" if use_attention else None
+            )
+            if use_cuda and not use_attention:
+                self.model = self.model.to("cuda")
+        else:
+            self._download_model()
+            self.model = md.vl(model=MODEL_PATH)
+
+    def _download_model(self):
+        # 1. create 'models' subdirectory if it doesn't exist
+        # 2. download compressed model from MODEL_URL into 'models' subdirectory (MODEL_PATH)
+        # 3. decompress the downloaded gz file
+        # 4. test that we have a model file at MODEL_PATH
+        # 5. if so delete the compressed model file
+        import os
+        import requests
+        import gzip
+
+        model_path = Path(MODEL_PATH)
+        if model_path.exists(): return True
+
+        print('INFO: downloading moondream model.')
+
+        ret = False
+
+        models_dir = Path('models')
+        models_dir.mkdir(parents=True, exist_ok=True)
+
+        model_path_gz = models_dir / 'moondream-2b-int8.mf.gz'
+        if not model_path_gz.exists():
+            response = requests.get(MODEL_URL)
+            with open(model_path_gz, 'wb') as f:
+                f.write(response.content)
+
+        with gzip.open(model_path_gz, 'rb') as f_in:
+            with open(model_path, 'wb') as f_out:
+                f_out.writelines(f_in)
+
+        if not model_path.exists():
+            raise FileNotFoundError(f'Model file not found at {model_path}')
+        else:
+            os.remove(model_path_gz)
+            ret = True
         
+        return ret
+
     def _encode_image(self, image_path):
         pass

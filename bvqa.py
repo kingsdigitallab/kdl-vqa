@@ -376,6 +376,7 @@ class FrameQuestionAnswers:
         '''Build a virtual environment with dependencies for the current describer.'''
         import os
         import subprocess
+        import sys
 
         venv_path = f'./venvs/{self.describer_name}'
         requirements_txt = './build/requirements.txt'
@@ -383,7 +384,7 @@ class FrameQuestionAnswers:
 
         # Create virtual environment
         if not os.path.exists(venv_path):
-            subprocess.run(['python3', '-m', 'venv', venv_path], check=True)
+            subprocess.run([sys.executable, '-m', 'venv', venv_path], check=True)
 
         # Install dependencies
         subprocess.run([f'{venv_path}/bin/pip', 'install', '-r', requirements_txt], check=True)

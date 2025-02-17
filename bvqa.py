@@ -372,6 +372,12 @@ class FrameQuestionAnswers:
         self.timer.step(f'ERROR: {message}')
         _error(message)
 
+    def action_load(self):
+        '''Attempt to load the describer model.'''
+        describer = self.new_describer()
+        info = describer.get_compute_info()
+        print(info)
+
     def action_build(self):
         '''Build a virtual environment with dependencies for the current describer.'''
         import os

@@ -9,8 +9,6 @@ from pathlib import Path
 # from questions import questions
 from describer.base import ImageDescriber
 from utils.helpers import Timer, get_image_paths, _error, read_test_cases
-# third-party
-from tqdm import tqdm
 
 # CUDA_VISIBLE_DEVICES='' python [...] # to force CPU
 # CUDA_VISIBLE_DEVICES=1 python [...] # to force 2nd GPU
@@ -145,6 +143,9 @@ class FrameQuestionAnswers:
         self.timer.step(f'comp : {self.describer.get_compute_info()}')
 
         i = 0
+
+        # third-party
+        from tqdm import tqdm
 
         for image_path in (pbar := tqdm(self.get_image_paths())):
             qas_path = self.get_answer_path(image_path)

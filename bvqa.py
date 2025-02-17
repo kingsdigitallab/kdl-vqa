@@ -395,6 +395,7 @@ class FrameQuestionAnswers:
         print(f'source {venv_path}/bin/activate')
 
     def action_report(self):
+        '''Generate an HTML report from the answer files.'''
         # TODO: Need to refactor this very ugly code.
         # Use template or and externalise to improve readability.
         report_path = self.get_path('report')

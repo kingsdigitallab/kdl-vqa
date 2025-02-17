@@ -167,6 +167,7 @@ cython_debug/
 /data
 /test/data/answers
 /models
+/venvs
 
 #Mac stuff
 .DS_Store

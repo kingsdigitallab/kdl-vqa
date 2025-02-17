@@ -53,8 +53,8 @@ class Moondream(ImageDescriber):
         model_id = model_id or MODEL_ID
         if model_id == MODEL_ID and not model_version:
             model_version = MODEL_VERSION
-        super().__init__(model_id, model_version)
         self.uses_transformers = False
+        super().__init__(model_id, model_version)
         self.model = None
         self.tokenizer = None
         self.cache = {

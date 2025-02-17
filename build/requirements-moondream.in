@@ -1,0 +1,14 @@
+# GPU processing with transformers library
+transformers
+torch #
+torchvision
+einops 
+pillow #
+pyvips 
+pyvips-binary
+# torchaudio
+# timm
+
+# Separate requirements for CPU processing 
+# (see https://github.com/vikhyat/moondream/issues/235)
+moondream==0.0.5 #

@@ -388,9 +388,11 @@ class FrameQuestionAnswers:
 
         # Install dependencies
         subprocess.run([f'{venv_path}/bin/pip', 'install', '-r', requirements_txt], check=True)
-        # subprocess.run([f'{venv_path}/bin/pip-sync', 'install', '-r', requirements_describer_txt], check=True)
+        subprocess.run([f'{venv_path}/bin/pip-sync', 'install', '-r', requirements_describer_txt], check=True)
 
         print(f'Virtual environment created at {venv_path} with dependencies installed.')
+        print('Use the following command to activate the virtual environment:')
+        print(f'source {venv_path}/bin/activate')
 
     def action_report(self):
         # TODO: Need to refactor this very ugly code.

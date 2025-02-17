@@ -372,11 +372,24 @@ class FrameQuestionAnswers:
         self.timer.step(f'ERROR: {message}')
         _error(message)
 
-    def action_load(self):
-        '''Attempt to load the describer model.'''
-        describer = self.new_describer()
-        info = describer.get_compute_info()
-        print(info)
+    def action_build(self):
+        '''Build a virtual environment with dependencies for the current describer.'''
+        import os
+        import subprocess
+
+        venv_path = f'./venvs/{self.describer_name}'
+        requirements_txt = './build/requirements.txt'
+        requirements_describer_txt = f'./build/requirements-{self.describer_name}.txt'
+
+        # Create virtual environment
+        if not os.path.exists(venv_path):
+            subprocess.run(['python', '-m', 'venv', venv_path], check=True)
+
+        # Install dependencies
+        subprocess.run([f'{venv_path}/bin/pip', 'install', '-r', requirements_txt], check=True)
+        subprocess.run([f'{venv_path}/bin/pip', 'install', '-r', requirements_describer_txt], check=True)
+
+        print(f'Virtual environment created at {venv_path} with dependencies installed.')
 
     def action_report(self):
         # TODO: Need to refactor this very ugly code.

@@ -387,7 +387,7 @@ class FrameQuestionAnswers:
 
         # Install dependencies
         subprocess.run([f'{venv_path}/bin/pip', 'install', '-r', requirements_txt], check=True)
-        subprocess.run([f'{venv_path}/bin/pip', 'install', '-r', requirements_describer_txt], check=True)
+        # subprocess.run([f'{venv_path}/bin/pip-sync', 'install', '-r', requirements_describer_txt], check=True)
 
         print(f'Virtual environment created at {venv_path} with dependencies installed.')
 

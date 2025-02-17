@@ -97,8 +97,8 @@ class Moondream(ImageDescriber):
         return self.model
     
     def _new_model(self, use_cuda=False, use_attention=False):
-        self.uses_transformers = False
         if use_cuda:
+            self.uses_transformers = True
             from transformers import AutoModelForCausalLM
             import torch
 
@@ -112,8 +112,8 @@ class Moondream(ImageDescriber):
             )
             if use_cuda and not use_attention:
                 self.model = self.model.to("cuda")
-                self.uses_transformers = True
         else:
+            self.uses_transformers = False
             self._download_model()
             self.model = md.vl(model=str(MODEL_PATH))
 
@@ -156,8 +156,7 @@ class Moondream(ImageDescriber):
         pass
 
     def get_name(self) -> str:
-        ret =  super().get_name()
-        model = self.model
+        ret = super().get_name()
         if not self.uses_transformers:
             ret = str(MODEL_PATH)
         return ret

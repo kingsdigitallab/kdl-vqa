@@ -3,17 +3,26 @@ from .base import ImageDescriber
 from PIL import Image
 from pathlib import Path
 import datetime, time
-import moondream as md
 
-# only used with transformers
-MODEL_ID = 'vikhyatk/moondream2'
-MODEL_VERSION = '2025-01-09'
+'''
+On 22nd Feb 2025, 
+HF transformers API can only run the model on GPU.
+Because there is a bug with the image encoding on CPU.
+
+Moondream API can run the model on CPU.
+Because it GPU support is forthcoming.
+'''
+MODEL_ID = 'moondream-2b-int8'
+DEFAULT_VERSION = {
+    # Default on CPU, uses moondream API
+    MODEL_ID: '9dddae84d54db4ac56fe37817aeaeb502ed083e2',
+    'moondream-0_5b-int8': '9dddae84d54db4ac56fe37817aeaeb502ed083e2',
+    # Default on GPU, uses HF transformers API
+    'vikhyatk/moondream2': '2025-01-09',
+}
 
 # only used with the CPU version of Moondream API, without transformers
 MODELS_PATH = Path('models')
-MODEL_FILE_NAME = 'moondream-2b-int8.mf'
-MODEL_URL = f'https://huggingface.co/vikhyatk/moondream2/resolve/9dddae84d54db4ac56fe37817aeaeb502ed083e2/{MODEL_FILE_NAME}.gz?download=true'
-MODEL_PATH = MODELS_PATH / MODEL_FILE_NAME
 
 class Moondream(ImageDescriber):
     """Image description using Moondeam2 model.
@@ -51,12 +60,13 @@ class Moondream(ImageDescriber):
     
     def __init__(self, model_id='', model_version=''):
         model_id = model_id or MODEL_ID
-        if model_id == MODEL_ID and not model_version:
-            model_version = MODEL_VERSION
-        self.uses_transformers = False
+        if not model_version:
+            model_version = DEFAULT_VERSION.get(model_id, '')
+            if not model_version:
+                raise Exception(f'Please specify the model version for {model_id}.')
+
         super().__init__(model_id, model_version)
         self.model = None
-        self.tokenizer = None
         self.cache = {
             'image_path': None,
             'image_encoding': None,
@@ -74,48 +84,45 @@ class Moondream(ImageDescriber):
         return self.model.query(self.cache['image_encoding'], question)['answer'].strip()
 
     def _init_model(self):
-        import torch
         self.model = None
 
-        is_cuda_available = torch.cuda.is_available()
-        if is_cuda_available:
+        # import torch
+        # is_cuda_available = torch.cuda.is_available()
+
+        if self._does_model_need_transformers():
+            import torch
             try:
                 self._new_model(use_cuda=True, use_attention=self.optimise)
             except torch.cuda.OutOfMemoryError as e:
-                print('WARNING: Model exceeds VRAM')
+                print('ERROR: Model exceeds VRAM')
             except RuntimeError as e:
-                print(f'WARNING: Unknown error while using CUDA: "{e}"')
-
-        if self.model is None:
-            print('WARNING: running model on CPU')
+                print(f'ERROR: Unknown error while using CUDA: "{e}"')
+        else:
             self._new_model()
 
-        # why no .to(X) ?
-        # from transformers import AutoTokenizer
-        # self.tokenizer = AutoTokenizer.from_pretrained(self.model_id, revision = self.model_version)
-
         return self.model
+
+    def _does_model_need_transformers(self):
+        return '/' in self.model_id
     
     def _new_model(self, use_cuda=False, use_attention=False):
         if use_cuda:
-            self.uses_transformers = True
             from transformers import AutoModelForCausalLM
             import torch
 
             self.model = AutoModelForCausalLM.from_pretrained(
                 self.model_id,
-                trust_remote_code=True,
                 revision=self.model_version,    
-                device_map="cuda" if use_attention else None,
-                torch_dtype = torch.float16 if use_cuda else None,
+                trust_remote_code=True,
+                device_map="cuda" if use_attention or use_cuda else None,
+                # torch_dtype = torch.float16 if use_cuda else None,
                 attn_implementation = "flash_attention_2" if use_attention else None
             )
-            if use_cuda and not use_attention:
-                self.model = self.model.to("cuda")
         else:
-            self.uses_transformers = False
-            self._download_model()
-            self.model = md.vl(model=str(MODEL_PATH))
+            import moondream as md
+            model_path = self._download_model()
+            if model_path:
+                self.model = md.vl(model=str(model_path))
 
     def _download_model(self):
         # 1. create 'models' subdirectory if it doesn't exist
@@ -127,38 +134,32 @@ class Moondream(ImageDescriber):
         import requests
         import gzip
 
-        ret = False
+        ret = None
 
-        if MODEL_PATH.exists(): return True
+        model_filename = f'{self.model_id}.mf'
+        model_url = f'https://huggingface.co/vikhyatk/moondream2/resolve/{self.model_version}/{model_filename}.gz?download=true'
+        model_path = MODELS_PATH / f'{self.model_id}-{self.model_version}.mf'
+
+        if model_path.exists(): return model_path
         MODELS_PATH.mkdir(parents=True, exist_ok=True)
 
-        print('INFO: downloading moondream model...')
+        print(f'INFO: downloading moondream model {self.model_id}:{self.model_version} ...')
 
-        model_path_gz = MODEL_PATH.with_suffix('.gz')
+        model_path_gz = model_path.with_suffix('.gz')
         if not model_path_gz.exists():
-            response = requests.get(MODEL_URL)
+            response = requests.get(model_url)
             with open(model_path_gz, 'wb') as f:
                 f.write(response.content)
 
         with gzip.open(model_path_gz, 'rb') as f_in:
-            with open(MODEL_PATH, 'wb') as f_out:
+            with open(model_path, 'wb') as f_out:
                 f_out.writelines(f_in)
 
-        if not MODEL_PATH.exists():
+        if not model_path.exists():
             raise FileNotFoundError(f'Model file not found at {model_path}')
         else:
             os.remove(model_path_gz)
-            ret = True
+            ret = model_path
         
         return ret
-
-    def _encode_image(self, image_path):
-        pass
-
-    def get_name(self) -> str:
-        ret = super().get_name()
-        if not self.uses_transformers:
-            ret = str(MODEL_PATH)
-        return ret
-
 

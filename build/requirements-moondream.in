@@ -6,6 +6,7 @@ einops
 pillow #
 pyvips 
 pyvips-binary
+accelerate
 # torchaudio
 # timm
 

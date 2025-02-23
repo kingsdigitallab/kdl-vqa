@@ -4,6 +4,8 @@
 #
 #    pip-compile build/requirements-moondream.in
 #
+accelerate==1.4.0
+    # via -r build/requirements-moondream.in
 certifi==2025.1.31
     # via requests
 cffi==1.17.1
@@ -29,6 +31,7 @@ fsspec==2025.2.0
     #   torch
 huggingface-hub==0.28.1
     # via
+    #   accelerate
     #   tokenizers
     #   transformers
 humanfriendly==10.0
@@ -47,6 +50,7 @@ networkx==3.4.2
     # via torch
 numpy==2.2.3
     # via
+    #   accelerate
     #   moondream
     #   onnx
     #   onnxruntime
@@ -92,6 +96,7 @@ onnxruntime==1.20.1
     # via moondream
 packaging==24.2
     # via
+    #   accelerate
     #   huggingface-hub
     #   onnxruntime
     #   transformers
@@ -104,6 +109,8 @@ protobuf==5.29.3
     # via
     #   onnx
     #   onnxruntime
+psutil==7.0.0
+    # via accelerate
 pycparser==2.22
     # via cffi
 pyvips==2.2.3
@@ -112,6 +119,7 @@ pyvips-binary==8.16.0
     # via -r build/requirements-moondream.in
 pyyaml==6.0.2
     # via
+    #   accelerate
     #   huggingface-hub
     #   transformers
 regex==2024.11.6
@@ -121,7 +129,9 @@ requests==2.32.3
     #   huggingface-hub
     #   transformers
 safetensors==0.5.2
-    # via transformers
+    # via
+    #   accelerate
+    #   transformers
 sympy==1.13.1
     # via
     #   onnxruntime
@@ -133,6 +143,7 @@ tokenizers==0.20.3
 torch==2.6.0
     # via
     #   -r build/requirements-moondream.in
+    #   accelerate
     #   torchvision
 torchvision==0.21.0
     # via -r build/requirements-moondream.in

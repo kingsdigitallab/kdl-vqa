@@ -10,7 +10,8 @@ import re
 MODEL_ID = "Qwen/Qwen2.5-VL-3B-Instruct"
 MODEL_VERSION = ''
 MAX_NEW_TOKENS = 512
-
+# TODO: external parameter?
+MAX_PIXELS = 3000 * 3000
 
 class QwenVL(ImageDescriber):
     """Image description using Qwen2-VL model.
@@ -76,6 +77,8 @@ class QwenVL(ImageDescriber):
                     {
                         "type": "image",
                         "image": image_path,
+                        "min_pixel": 0,
+                        "max_pixel": MAX_PIXELS,
                         # "resized_height": 425,
                         # "resized_width": 756,                    
                     },

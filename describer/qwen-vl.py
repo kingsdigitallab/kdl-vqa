@@ -6,7 +6,8 @@ import datetime, time
 import torch
 import re
 
-MODEL_ID = "Qwen/Qwen2-VL-2B-Instruct-GPTQ-Int4"
+#MODEL_ID = "Qwen/Qwen2-VL-2B-Instruct-GPTQ-Int4"
+MODEL_ID = "Qwen/Qwen2.5-VL-3B-Instruct"
 MODEL_VERSION = ''
 MAX_NEW_TOKENS = 512
 
@@ -135,8 +136,8 @@ class QwenVL(ImageDescriber):
         return self.model
 
     def _new_model(self, use_cuda=False, use_attention=False):
-        from transformers import Qwen2VLForConditionalGeneration
-        self.model = Qwen2VLForConditionalGeneration.from_pretrained(
+        from transformers import Qwen2_5_VLForConditionalGeneration
+        self.model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
             self.model_id, torch_dtype="auto", device_map="auto"
         )
 

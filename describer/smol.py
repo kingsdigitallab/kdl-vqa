@@ -63,7 +63,11 @@ class SmolVLM(ImageDescriber):
             skip_special_tokens=True,
         )
 
-        return generated_texts[0]
+        # chop off the part up to '\nAssistant: '
+        ret = generated_texts[0]
+        ret = ret.split('\nAssistant: ')[1]
+
+        return ret
 
     def _init_model(self):
         import torch

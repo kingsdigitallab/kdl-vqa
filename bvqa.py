@@ -219,7 +219,8 @@ class FrameQuestionAnswers:
 
         if ret:
             now = time.time()
-            if now - ret['meta']['started'] < DESCRIBE_IMAGE_LOCK_TIMEOUT_IN_SECONDS:
+            meta_started = ret['meta'].get('started', None)
+            if meta_started and now - meta_started < DESCRIBE_IMAGE_LOCK_TIMEOUT_IN_SECONDS:
                 special_case = 'image is already locked'
                 ret = None
             else:
@@ -249,9 +250,17 @@ class FrameQuestionAnswers:
                     if model_name not in ret['models']:
                         ret['models'][model_name] = {'questions': {}}
                     for question_key, answer in answers.items():
+                        question = questions[question_key]
+                        # question contains 'json' and the answer is valid json, convert to dict
+                        if 'json' in question.lower():
+                            try:
+                                answer = json.loads(answer)
+                            except json.JSONDecodeError as e:
+                                continue
+
                         answer_info = {
                             'answer': answer,
-                            'hash': self.get_hash_from_question(questions[question_key]),
+                            'hash': self.get_hash_from_question(question),
                         }
                         self.set_answer_correct(image_path, question_key, answer_info)
                         ret['models'][model_name]['questions'][question_key] = answer_info

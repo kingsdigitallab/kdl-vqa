@@ -140,7 +140,7 @@ class FrameQuestionAnswers:
         self.timer.step(f'model: {self.describer.get_name()}')
         import socket
         self.timer.step(f'host : {socket.gethostname()}')
-        self.timer.step(f'comp : {self.describer.get_compute_info()['desc']}')
+        self.timer.step(f'comp : {self.describer.get_compute_info()["desc"]}')
 
         i = 0
 

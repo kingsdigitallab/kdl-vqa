@@ -42,6 +42,7 @@ numpy==2.2.3
     # via
     #   accelerate
     #   decord
+    #   torchvision
     #   transformers
 nvidia-cublas-cu12==12.4.5.8
     # via
@@ -84,7 +85,9 @@ packaging==24.2
     #   qwen-vl-utils
     #   transformers
 pillow==11.1.0
-    # via qwen-vl-utils
+    # via
+    #   qwen-vl-utils
+    #   torchvision
 psutil==7.0.0
     # via accelerate
 pyyaml==6.0.2
@@ -110,7 +113,11 @@ sympy==1.13.1
 tokenizers==0.21.0
     # via transformers
 torch==2.6.0
-    # via accelerate
+    # via
+    #   accelerate
+    #   torchvision
+torchvision==0.21.0
+    # via -r build/requirements-qwen-vl.in
 tqdm==4.67.1
     # via
     #   huggingface-hub

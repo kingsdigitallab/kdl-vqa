@@ -21,6 +21,10 @@ class QwenVL(ImageDescriber):
     https://huggingface.co/Qwen/Qwen2-VL-2B-Instruct-GPTQ-Int4
 
     1.07B params, int4
+
+    TODO: support for https://huggingface.co/allenai/olmOCR-7B-0225-preview
+    "Lucy-in-the-Sky/olmOCR-7B-0225-preview-Q4_K_M-GGUF"
+
     """    
     
     def __init__(self, model_id='', model_version=''):
@@ -136,6 +140,9 @@ class QwenVL(ImageDescriber):
             raise Exception('GPU is needed for this model.')
 
         from transformers import AutoProcessor
+        processor_model = self.model_id
+        if 'olmOCR' in processor_model:
+            processor_model = 'Qwen/Qwen2-VL-7B-Instruct'
         self.processor = AutoProcessor.from_pretrained(self.model_id)
 
         return self.model

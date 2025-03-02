@@ -89,19 +89,19 @@ class ImageDescriber:
         '''
         raise Exception('Method should be implemented.')
 
-    def get_compute_info(self) -> str:
+    def get_compute_info(self):
+        ret = {
+            'type': 'cpu',
+            'desc': 'cpu'
+        }
+
         model = self.get_model()
+
         if hasattr(model, 'parameters'):
             device = next(model.parameters()).device
-
-            ret = device
-
-            if ret.type == 'cuda':
+            ret['type'] = device.type
+            if device.type == 'cuda':
                 import torch
-                ret = f'{ret} = {torch.cuda.get_device_properties(ret.index)}'
-        else:
-            from types import SimpleNamespace
-            data = {'type': 'cpu'}
-            ret = SimpleNamespace(**data)
+                ret['desc'] = f'{device} = {torch.cuda.get_device_properties(device.index)}'
     
         return ret

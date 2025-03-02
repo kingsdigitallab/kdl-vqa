@@ -12,6 +12,7 @@ MODEL_VERSION = ''
 MAX_NEW_TOKENS = 512
 # TODO: external parameter?
 MAX_PIXELS = 3000 * 3000
+# MAX_PIXELS = 30 * 30
 
 class QwenVL(ImageDescriber):
     """Image description using Qwen2-VL model.
@@ -103,9 +104,10 @@ class QwenVL(ImageDescriber):
             padding=True,
             return_tensors="pt",
         )
-        inputs = inputs.to("cuda")
-
-        #
+        comp_info = self.get_compute_info()
+        if comp_info['type'] == 'cuda':
+            print('CUDA')
+            inputs = inputs.to("cuda")
 
         generated_ids = self.model.generate(**inputs, max_new_tokens=MAX_NEW_TOKENS)
         generated_ids_trimmed = [

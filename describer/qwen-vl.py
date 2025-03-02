@@ -6,8 +6,8 @@ import datetime, time
 import torch
 import re
 
-#MODEL_ID = "Qwen/Qwen2-VL-2B-Instruct-GPTQ-Int4"
-MODEL_ID = "Qwen/Qwen2.5-VL-3B-Instruct"
+MODEL_ID = "Qwen/Qwen2-VL-2B-Instruct-GPTQ-Int4"
+#MODEL_ID = "Qwen/Qwen2.5-VL-3B-Instruct"
 MODEL_VERSION = ''
 MAX_NEW_TOKENS = 512
 # TODO: external parameter?
@@ -106,7 +106,6 @@ class QwenVL(ImageDescriber):
         )
         comp_info = self.get_compute_info()
         if comp_info['type'] == 'cuda':
-            print('CUDA')
             inputs = inputs.to("cuda")
 
         generated_ids = self.model.generate(**inputs, max_new_tokens=MAX_NEW_TOKENS)
@@ -141,8 +140,12 @@ class QwenVL(ImageDescriber):
         return self.model
 
     def _new_model(self, use_cuda=False, use_attention=False):
-        from transformers import Qwen2_5_VLForConditionalGeneration
-        self.model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
+        if '2.5' in MODEL_ID:
+            from transformers import Qwen2_5_VLForConditionalGeneration as QWenVLForConditionalGeneration
+        else:
+            from transformers import Qwen2VLForConditionalGeneration as QWenVLForConditionalGeneration
+
+        self.model = QWenVLForConditionalGeneration.from_pretrained(
             self.model_id, torch_dtype="auto", device_map="auto"
         )
 

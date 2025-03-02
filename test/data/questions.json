@@ -1,5 +1,6 @@
 {
     "long_description": "Provide a long and detailed description of the image.",
     "location": "Is the photograph taken 'indoor' or 'outdoor'? Answer with one word only.",
-    "objects": "List the name of objects in this image."
+    "objects": "List the name of objects in this image.",
+    "text": "Extract all the text from the image into a JSON object."
 }

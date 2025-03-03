@@ -148,7 +148,7 @@ class QwenVL(ImageDescriber):
         return self.model
 
     def _new_model(self, use_cuda=False, use_attention=False):
-        if '2.5' in MODEL_ID:
+        if '2.5' in self.model_id:
             from transformers import Qwen2_5_VLForConditionalGeneration as QWenVLForConditionalGeneration
         else:
             from transformers import Qwen2VLForConditionalGeneration as QWenVLForConditionalGeneration

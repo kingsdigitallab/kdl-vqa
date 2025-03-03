@@ -1,0 +1,4 @@
+# GPU processing with transformers library
+torch
+transformers
+pillow

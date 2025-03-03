@@ -1,6 +1,6 @@
 # Keep all slow imports (e.g. torch) inside methods
 from .base import ImageDescriber
-from PIL import Image
+# from PIL import Image
 from pathlib import Path
 import datetime, time
 

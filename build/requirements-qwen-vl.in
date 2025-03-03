@@ -3,3 +3,5 @@ qwen-vl-utils[decord]==0.0.8
 git+https://github.com/huggingface/transformers 
 accelerate
 torchvision
+optimum # for gptq models
+auto-gptq # for gptq models, note that gptqmodel is harder to install

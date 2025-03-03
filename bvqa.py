@@ -256,7 +256,7 @@ class FrameQuestionAnswers:
                             try:
                                 answer = json.loads(answer)
                             except json.JSONDecodeError as e:
-                                continue
+                                pass
 
                         answer_info = {
                             'answer': answer,

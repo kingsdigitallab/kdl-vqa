@@ -424,10 +424,11 @@ class FrameQuestionAnswers:
             # First try to run a custom bash script
             requirements_bash = f'./requirements/{requirements_stage}.bash'
             if os.path.exists(requirements_bash):
+                venv_path_activate = os.path.join(venv_path, 'bin', 'activate')
                 command = [
                     '/bin/bash',  
                     '-c',        
-                    f'source "{os.path.join(venv_path, 'bin', 'activate')}" && cd "requirements" && source "{requirements_stage}.bash"'
+                    f'source "{venv_path_activate}" && cd "requirements" && source "{requirements_stage}.bash"'
                 ]
                 print(f'{requirements_stage}: {command}')
                 try:

@@ -5,6 +5,7 @@ import json
 import argparse
 import datetime, time
 from pathlib import Path
+import os
 # this app
 # from questions import questions
 from describer.base import ImageDescriber
@@ -18,6 +19,9 @@ from utils.helpers import Timer, get_image_paths, _error, read_test_cases
 # srun -p cpu -c 16 --mem 4096 python describe.py -f 99945 -q frame_accent -r
 # srun -p gpu -c 4 --mem 8192 --gpus-per-task 1 --constraint a100 -n 1 python describe.py -f 99945 -r
 # srun -p interruptible_gpu -c 4 --mem 8192 --gpus-per-task 1 --constraint a40 -n 2 -t 2-0:00  python describe.py
+
+# read BVQA_VENVS from environment variable
+BVQA_VENVS = os.getenv('BVQA_VENVS', 'venvs')
 
 VERSION = '0.2.0'
 # TODO: use a 'dummy' model
@@ -393,17 +397,59 @@ class FrameQuestionAnswers:
         import subprocess
         import sys
 
-        venv_path = f'./venvs/{self.describer_name}'
-        requirements_txt = './build/requirements.txt'
-        requirements_describer_txt = f'./build/requirements-{self.describer_name}.txt'
+        venv_path = os.path.join(BVQA_VENVS, self.describer_name)
+
+        print(f'Rebuilding python environment {venv_path} ...')
+        # requirements_base_txt = './requirements/base.txt'
+        # requirements_describer_bash = f'./requirements/{self.describer_name}.bash'
+        # requirements_describer_txt = f'./requirements/{self.describer_name}.txt'
+
+        # delete virtual environment if it already exists
+        if os.path.exists(venv_path):
+            print(f'Remove existing environment.')
+            import shutil
+            shutil.rmtree(venv_path)
 
         # Create virtual environment
         if not os.path.exists(venv_path):
+            print(f'Create environment.')
             subprocess.run([sys.executable, '-m', 'venv', venv_path], check=True)
 
-        # Install dependencies
-        subprocess.run([f'{venv_path}/bin/pip', 'install', '-r', requirements_txt], check=True)
-        subprocess.run([f'{venv_path}/bin/pip-sync', requirements_describer_txt], check=True)
+        # Install base/common requirements, then the describer reqs
+        requirements_stages = [
+            'base',
+            self.describer_name
+        ]
+        for requirements_stage in requirements_stages:
+            # First try to run a custom bash script
+            requirements_bash = f'./requirements/{requirements_stage}.bash'
+            if os.path.exists(requirements_bash):
+                command = [
+                    '/bin/bash',  
+                    '-c',        
+                    f'source "{os.path.join(venv_path, 'bin', 'activate')}" && cd "requirements" && source "{requirements_stage}.bash"'
+                ]
+                print(f'{requirements_stage}: {command}')
+                try:
+                    process = subprocess.run(command, text=True, check=True, capture_output=False)
+                except subprocess.CalledProcessError as e:
+                    print(f'FAIL: {e.stderr} [{requirements_stage}: {command}]')
+                    exit()
+
+                # print(f'Output: {process.stdout}')
+                # print(f'Error: {process.stderr}')
+            else:
+                # Then install pip requirements for describer
+                requirements_txt = f'./requirements/{requirements_stage}.txt'
+                if os.path.exists(requirements_txt):
+                    print(f'{requirements_stage}: {requirements_txt}')
+                    subprocess.run([f'{venv_path}/bin/pip', 'install', '-r', requirements_txt], check=True)
+
+        # Install base dependencies
+        # subprocess.run([f'{venv_path}/bin/pip', 'install', '-r', requirements_base_txt], check=True)
+        # subprocess.run([f'{venv_path}/bin/ltt', 'install', 'torch', 'torchvision', 'accelerate'], check=True)
+        # subprocess.run([f'{venv_path}/bin/pip-sync', requirements_describer_txt], check=True)
+        # subprocess.run([f'{venv_path}/bin/pip', 'install', '-r', requirements_describer_txt], check=True)
 
         print(f'\nVirtual environment created at {venv_path} with dependencies installed.')
         print('Use the following command to activate the virtual environment:')

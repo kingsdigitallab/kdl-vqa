@@ -1,0 +1,9 @@
+# requirements for all bvqa actions, 
+# inexcluding packages specific to any describer.
+wheel
+setuptools
+tqdm
+pillow
+
+# pip-tools
+# nvidia-ml-py

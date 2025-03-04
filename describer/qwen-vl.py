@@ -83,8 +83,6 @@ class QwenVL(ImageDescriber):
                     {
                         "type": "image",
                         "image": image_path,
-                        "min_pixel": 0,
-                        "max_pixel": MAX_PIXELS,
                         # "resized_height": 425,
                         # "resized_width": 756,                    
                     },
@@ -143,7 +141,11 @@ class QwenVL(ImageDescriber):
         processor_model = self.model_id
         if 'olmOCR' in processor_model:
             processor_model = 'Qwen/Qwen2-VL-7B-Instruct'
-        self.processor = AutoProcessor.from_pretrained(self.model_id)
+        self.processor = AutoProcessor.from_pretrained(
+            self.model_id,
+            min_pixel=0,
+            max_pixel=MAX_PIXELS,
+        )
 
         return self.model
 
@@ -154,7 +156,8 @@ class QwenVL(ImageDescriber):
             from transformers import Qwen2VLForConditionalGeneration as QWenVLForConditionalGeneration
 
         self.model = QWenVLForConditionalGeneration.from_pretrained(
-            self.model_id, torch_dtype="auto", device_map="auto"
+            self.model_id, torch_dtype="auto", device_map="auto",
+            attn_implementation="fash_attention_2" if use_attention else "eager"
         )
 
     def _encode_image(self, image_path):

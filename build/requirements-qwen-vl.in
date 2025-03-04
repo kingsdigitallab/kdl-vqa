@@ -1,7 +1,0 @@
-# From 2.5 doc: https://huggingface.co/Qwen/Qwen2.5-VL-3B-Instruct#requirements
-qwen-vl-utils[decord]==0.0.8
-git+https://github.com/huggingface/transformers 
-accelerate
-torchvision
-optimum # for gptq models
-auto-gptq # for gptq models, note that gptqmodel is harder to install

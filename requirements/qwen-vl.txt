@@ -1,0 +1,7 @@
+# From 2.5 doc: https://huggingface.co/Qwen/Qwen2.5-VL-3B-Instruct#requirements
+qwen-vl-utils[decord]==0.0.8
+# @c0f8d055ce7a218e041e20a06946bf0baa8a7d6a
+git+https://github.com/huggingface/transformers@c0f8d055ce7a218e041e20a06946bf0baa8a7d6a
+
+# to run smaller/faster gptq models provided by qwen
+optimum

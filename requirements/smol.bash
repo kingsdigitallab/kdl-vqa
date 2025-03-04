@@ -1,4 +1,3 @@
 # GPU processing with transformers library
-torch
-transformers
-pillow
+. torch.bash
+ltt install -r smol.txt

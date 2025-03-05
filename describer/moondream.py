@@ -12,11 +12,12 @@ Because there is a bug with the image encoding on CPU.
 Moondream API can run the model on CPU.
 Because it GPU support is forthcoming.
 '''
-MODEL_ID = 'moondream-2b-int8'
+MODEL_ID = 'moondream-0_5b-int8'
+MODEL_VERSION = '9dddae84d54db4ac56fe37817aeaeb502ed083e2'
 DEFAULT_VERSION = {
     # Default on CPU, uses moondream API
-    MODEL_ID: '9dddae84d54db4ac56fe37817aeaeb502ed083e2',
-    'moondream-0_5b-int8': '9dddae84d54db4ac56fe37817aeaeb502ed083e2',
+    MODEL_ID: MODEL_VERSION,
+    'moondream-2b-int8': MODEL_VERSION,
     # Default on GPU, uses HF transformers API
     'vikhyatk/moondream2': '2025-01-09',
 }

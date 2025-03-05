@@ -106,7 +106,7 @@ A describer is a backend for bvqa that provide support for a family of vision la
 | ---------------- | ------------------------------------- | ------------------------------------------ | ------------ | ------ | ---------- | :-------- | --- |
 | moondream      | moondream-2b-int8                   | 9dddae84d54db4ac56fe37817aeaeb502ed083e2 | 2b:int8    |      |          |         |   |
 | moondream      | moondream-0_5b-int8                 | 9dddae84d54db4ac56fe37817aeaeb502ed083e2 | 0.5b:int8  |      |          |         |   |
-| moondream      | vikhyatk/moondream2                 | 2025-01-09                               | 2b:FP16    |      |          |         |   |
+| moondream      | vikhyatk/moondream2                 | 2025-01-09                               |            |      |          |         |   |
 | smol           | HuggingFaceTB/SmolVLM-Instruct      |                                          | 2b:BF16    |      |          |         |   |
 | qwen-vl        | Qwen/Qwen2-VL-2B-Instruct-GPTQ-Int4 |                                          | 2b:int4    |      |          |         |   |
 | qwen-vl        | Qwen/Qwen2.5-VL-3B-Instruct         |                                          | 3b:BF16    |      |          |         |   |
@@ -114,6 +114,18 @@ A describer is a backend for bvqa that provide support for a family of vision la
 | ollama         | granite3.2-vision                   |                                          | 2b:Q4_K_M  |      |          |         |   |
 | ollama         | llama3.2-vision                     |                                          | 11b:Q4_K_M |      |          |         |   |
 | ollama         | minicpm-v                           |                                          | 8b:Q4_0    |      |          |         |   |
+
+Tested on Ubuntu 22.04 LTD, 128GB RAM, RTX 4090 (24GB VRAM), AMD Ryzen Threadripper 1950X 16-Core Processor, CUDA 12.2, Nvidia driver 535.183.01.
+
+**moondream-*-int8** models work on CPU only. The model name and version refer to the filename and version stored on github moondream repository.
+
+**vikhyatk/moondream2** model works on GPU only. It's name and version match those on the Hugging Face model card.
+
+**ollama** model names refer to the exact names used by ollama to pull or run them. The version refers to the size (e.g. 2b) and quantisation. If unspecified, the default size and quantisation are as specified on ollama library.
+
+[List of vision models supported by ollama](https://ollama.com/search?c=vision&o=newesthttps:/).
+
+**smol** and **qwen-vl** models and versions refer to model names on the Hugging Face hub. In principle the describers should be compatible with any model on Hugging Face what was fine tuned or quantised from smol or qwen2-vl or qwen2.5-vl.
 
 ## Reviewing (`report`)
 

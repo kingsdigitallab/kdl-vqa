@@ -30,18 +30,12 @@ Early prototype developped by [King's Digital Lab](https://kdl.kcl.ac.uk).
 
 ![Workflow](doc/bvqa-workflow.jpg)
 
-## Design principles
-
-* Ease of use
-* Reproducibility
-* Modularity
-* Parallel processing
-
 ## Requirements
 
 This tool has been tested with Python 3.10 on Linux (22.04) machines with a variety of GPUs (1080ti, 4090).
 
-Although a GPU is not mandatory for the moondream model, processing will be very slow without it.
+Although a GPU is not mandatory for the moondream model, processing will be very slow without it. 
+Some models (e.g. Qwen VL 2.5) may require more recent generation of GPUs to process larger images.
 
 BVQA has a `build` action to create a python virtual environment and install all dependencies automatically.
 
@@ -114,15 +108,19 @@ A describer is a backend for bvqa that provide support for a family of vision la
 | ollama         | [minicpm-v](https://ollama.com/library/minicpm-v)                                                 |                                          | 8b:Q4_0    | 7    | 1:28  |         |   |
 | ollama         | [granite3.2-vision](https://ollama.com/library/granite3.2-vision)                                 |                                          | 2b:Q4_K_M  | 13   | UNRESPONSIVE  |         |   |
 
-Tested on Ubuntu 22.04 LTD, 128GB RAM, RTX 4090 (24GB VRAM), AMD Ryzen Threadripper 1950X 16-Core Processor, CUDA 12.2, Nvidia driver 535.183.01. 2025/03/05. Ollama 0.5.13. Four images and four questions. The duration does not always include time to load the model. But always excludes download. VRAM is rounded up. Largest image is 7360x4912. Models resize the images in different ways, which may affect processing speed and quality of answers. OOM: out of memory error. 
+*Tested on Ubuntu 22.04 LTD, 128GB RAM, RTX 4090 (24GB VRAM), AMD Ryzen Threadripper 1950X 16-Core Processor, CUDA 12.2, Nvidia driver 535.183.01. 2025/03/05. Ollama 0.5.13. Four images and four questions. The duration does not always include time to load the model. But always excludes download. VRAM is rounded up. Largest image is 7360x4912. Models resize the images in different ways, which may affect processing speed and quality of answers. OOM: out of memory error.*
 
--o enables flash attention (which requires Ampere, Ada, or Hopper) to reduce memory usage and may increase speed. Without it Qwen would require extremely large amount of VRAM (> 100GB) for a medium/large image (~3000x3000px).
+*-o flag, when passed to bvqa, enables flash attention (which requires Ampere, Ada, or Hopper GPUs) to reduce memory usage and may increase speed. Without it Qwen would require extremely large amount of VRAM (> 100GB) for a larger image (~3000x3000px).*
 
-### describers
+### Describers
+
+#### moondream
 
 **moondream-*-int8** models work on CPU only. The model name and version refer to the filename and version stored on github moondream repository.
 
 **vikhyatk/moondream2** model works on GPU only. It's name and version match those on the Hugging Face model card.
+
+#### ollama
 
 **ollama** model names refer to the exact names used by ollama to pull or run them. The version refers to the size (e.g. 2b) and quantisation. If unspecified, the default size and quantisation are as specified on ollama library.
 
@@ -131,6 +129,8 @@ By default the describer will call Ollama at http://localhost:11434. You can cha
 Please make sure you have pulled your model with ollama before running the describer.
 
 [List of vision models supported by ollama](https://ollama.com/search?c=vision&o=newest).
+
+#### smol and qwen-vl
 
 **smol** and **qwen-vl** models and versions refer to model names on the Hugging Face hub. In principle the describers should be compatible with any model on Hugging Face what was fine tuned or quantised from smol or qwen2-vl or qwen2.5-vl.
 
@@ -254,7 +254,15 @@ After running your questions on a larger proportion of your collection, you migh
 As prompt engineering is usually very model-specific, moving to another model can be very disruptive.
 It aways mean reassessing the answers and often means reformulating many questions from scratch.
 
+## Design principles
+
+* Ease of use
+* Reproducibility
+* Modularity
+* Parallel processing
+
 ## External references
 
 * [Vision-Language Models for Vision Tasks: A Survey, 2024](https://arxiv.org/abs/2304.00685)
 * [Abdallah, A., Eberharter, D., Pfister, Z. et al. A survey of recent approaches to form understanding in scanned documents. Artif Intell Rev 57, 342 (2024). ](https://link.springer.com/article/10.1007/s10462-024-11000-0#Sec12)
+

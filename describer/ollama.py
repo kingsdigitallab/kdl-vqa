@@ -7,20 +7,10 @@ import datetime, time
 # https://huggingface.co/meta-llama/Llama-3.2-11B-Vision-Instruct
 MODEL_ID = 'llama3.2-vision'
 MODEL_VERSION = '11b'
-OLLAMA_HOST = 'http://localhost:11435'
+BVQA_OLLAMA_HOST = os.getenv('ENV_VAR_NAME', 'http://localhost:11434')
 
 class Ollama(ImageDescriber):
     """Image description using a model served by Ollama.
-
-    https://github.com/ollama/ollama-python
-
-    Note Ollama listens to port 11434 by default.
-    This describer sends a requests to OLLAMA_HOST.
-    Which is on a different port.
-
-    For that to work you need to run ssh -L11435:H:11434
-
-    Where H is the host that runs Ollama.
 
     List of avaible models at:
     
@@ -86,9 +76,13 @@ class Ollama(ImageDescriber):
 
     def _init_model(self):
         from ollama import Client
-        self.model = Client(host=OLLAMA_HOST)
+        self.model = Client(host=BVQA_OLLAMA_HOST)
         return self.model
 
-    def get_compute_info(self) -> str:
-        return 'Unknown remote compute for Ollama'
-    
+    def get_compute_info(self):
+        ret = {
+            'type': 'ollama',
+            'desc': 'ollama'
+        }
+
+        return ret

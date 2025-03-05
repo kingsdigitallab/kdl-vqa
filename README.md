@@ -106,7 +106,7 @@ A describer is a backend for bvqa that provide support for a family of vision la
 | ---------------- | ------------------------------------- | ------------------------------------------ | ------------ | ------ | ---------- | :-------- | --- |
 | moondream      | moondream-2b-int8                   | 9dddae84d54db4ac56fe37817aeaeb502ed083e2 | 2b:int8    |      |          |         |   |
 | moondream      | moondream-0_5b-int8                 | 9dddae84d54db4ac56fe37817aeaeb502ed083e2 | 0.5b:int8  |      |          |         |   |
-| moondream      | vikhyatk/moondream2                 | 2025-01-09                               |            |      |          |         |   |
+| moondream      | vikhyatk/moondream2                 | 2025-01-09                               | 2b:FP16    |      |          |         |   |
 | smol           | HuggingFaceTB/SmolVLM-Instruct      |                                          | 2b:BF16    |      |          |         |   |
 | qwen-vl        | Qwen/Qwen2-VL-2B-Instruct-GPTQ-Int4 |                                          | 2b:int4    |      |          |         |   |
 | qwen-vl        | Qwen/Qwen2.5-VL-3B-Instruct         |                                          | 3b:BF16    |      |          |         |   |
@@ -122,6 +122,8 @@ Tested on Ubuntu 22.04 LTD, 128GB RAM, RTX 4090 (24GB VRAM), AMD Ryzen Threadrip
 **vikhyatk/moondream2** model works on GPU only. It's name and version match those on the Hugging Face model card.
 
 **ollama** model names refer to the exact names used by ollama to pull or run them. The version refers to the size (e.g. 2b) and quantisation. If unspecified, the default size and quantisation are as specified on ollama library.
+
+By default the describer will call Ollama at http://localhost:11434. You can change this address by setting the BVQA_OLLAMA_HOST environment variable.
 
 [List of vision models supported by ollama](https://ollama.com/search?c=vision&o=newesthttps:/).
 

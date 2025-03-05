@@ -1,7 +1,7 @@
 # Batch visual question answering (BVQA)
 
-BVQA is a python command line tool that lets you ask 
-a series of predefined questions 
+BVQA is a python command line tool that lets you ask
+a series of predefined questions
 to a visual language model (VLM) about a collection of images.
 It saves the answers in json files (one file per image).
 
@@ -10,6 +10,7 @@ A **describer** is a backend for a family of vision language models.
 Early prototype developped by [King's Digital Lab](https://kdl.kcl.ac.uk).
 
 ## Main use cases
+
 - efficient extraction of semantic features from a large collection of images
 - model selection: objectively compare the performance (quality of responses, resource utilisation, speed) of different models on the same questions and images.
 
@@ -53,9 +54,9 @@ By default the root folder for all the input and output is ./data.
 
 In the example below we'll be using 'moondream' as a vision language model. See section below for other describers.
 
-### Install 
+### Install
 
-This action will create a virtual environment and install all python packages 
+This action will create a virtual environment and install all python packages
 needed to run moondream on CPU and GPU.
 
 `python3 bvqa.py -d moondream build`
@@ -96,13 +97,32 @@ Such as:
 * -R to use a different root folder for your data
 * -t to run your test cases (see section below)
 
+## Describers and models
+
+A describer is a backend for bvqa that provide support for a family of vision language models.
+
+
+| Describer (-d) | Model (-m)                          | Version (-v)                             | Size:Quant | VRAM | Duration | Max res |   |
+| ---------------- | ------------------------------------- | ------------------------------------------ | ------------ | ------ | ---------- | :-------- | --- |
+| moondream      | moondream-2b-int8                   | 9dddae84d54db4ac56fe37817aeaeb502ed083e2 | 2b:int8    |      |          |         |   |
+| moondream      | moondream-0_5b-int8                 | 9dddae84d54db4ac56fe37817aeaeb502ed083e2 | 0.5b:int8  |      |          |         |   |
+| moondream      | vikhyatk/moondream2                 | 2025-01-09                               | 2b:FP16    |      |          |         |   |
+| smol           | HuggingFaceTB/SmolVLM-Instruct      |                                          | 2b:BF16    |      |          |         |   |
+| qwen-vl        | Qwen/Qwen2-VL-2B-Instruct-GPTQ-Int4 |                                          | 2b:int4    |      |          |         |   |
+| qwen-vl        | Qwen/Qwen2.5-VL-3B-Instruct         |                                          | 3b:BF16    |      |          |         |   |
+| qwen-vl        | allenai/olmOCR-7B-0225-preview      |                                          | 7b:BF16    |      |          |         |   |
+| ollama         | granite3.2-vision                   |                                          | 2b:Q4_K_M  |      |          |         |   |
+| ollama         | llama3.2-vision                     |                                          | 11b:Q4_K_M |      |          |         |   |
+| ollama         | minicpm-v                           |                                          | 8b:Q4_0    |      |          |         |   |
+
 ## Reviewing (`report`)
 
-The `report` action (`python bvqa.py report`) generates a HTML document 
-under `data/report.html` from your answer files for reviewing purpose. 
+The `report` action (`python bvqa.py report`) generates a HTML document
+under `data/report.html` from your answer files for reviewing purpose.
 It displays your images and the answers.
 
 The following arguments will affect the report:
+
 * -m to only show answers by model which id or version matches on any part of given string
 * -q to only show the answers to the given question key(s)
 * -f to filter which images are included the report
@@ -121,7 +141,7 @@ The following arguments will affect the report:
 }
 ```
 
-In this example, we have one test case with key 'susan'. 
+In this example, we have one test case with key 'susan'.
 The test case applies to all image which path or filename contains that key.
 The test case refers to two questions (long_descriptions and location) defined in `questions.json`.
 A question has a conditions, e.g. ["library", "-shop"] which must be met to consider an answer correct.
@@ -131,7 +151,7 @@ will have the generated answer to the 'location' question considered correct
 if it that answer contains the word 'library' and not 'shop'.
 The answer to the long_description will be considered correct if it contains 'book' or 'volume'.
 
-The conditions are python regular expression patterns. 
+The conditions are python regular expression patterns.
 Except for the optional minus sign at the start, which denotes a negative pattern.
 
 `python bvqa.py -t` will read your test cases from `data/test_cases.json`,
@@ -142,6 +162,7 @@ and set a field `correct` to 0 or 1 in the answer file, alongside the `answer` f
 You can subsequently use the `report action` to review the (in)correct answers in a HTML file.
 
 Test cases can help you:
+
 * easily sample your image collection (like -f would but for a single image at a time) without having to add/remove/move/rename files
 * iteratively craft your questions to optimise the accuracy of the answers
 * more objectively compare different models and select the best one
@@ -149,21 +170,21 @@ Test cases can help you:
 ## Caching
 
 The tool will not ask a question again if an answer has been saved.
-It will ask it again only if the question or model has changed. 
-This allows you to iteratively reformulate one question at a time 
-and only that question will be processed on your image collection. 
-Which is convenient considering how much models can be sensitive to the phrasing of a prompt. 
+It will ask it again only if the question or model has changed.
+This allows you to iteratively reformulate one question at a time
+and only that question will be processed on your image collection.
+Which is convenient considering how much models can be sensitive to the phrasing of a prompt.
 You can combine this with the -f option to test on a few images only.
 
-The -r option tells the tool to ignore the cache. 
-When supplied, it will always ask the questions again. 
+The -r option tells the tool to ignore the cache.
+When supplied, it will always ask the questions again.
 This is useful in the case where you want to compare the performance between different computing devices (e.g. Nvidia A100 vs L40s GPUs) to estimate the total duration on your entire collection.
 
 ## Parallelism
 
-To speed up processing you can run multiple instances of the tool in parallel. 
-For this to work they need to write in the same `answers` folder. 
-Each instance locks the image by writing a timestamp in the answer file. 
+To speed up processing you can run multiple instances of the tool in parallel.
+For this to work they need to write in the same `answers` folder.
+Each instance locks the image by writing a timestamp in the answer file.
 Other instances will skip the image when the timestamp is no older than two minutes.
 
 ### SLURM HPC
@@ -178,8 +199,7 @@ You can keep adding more instances with further calls to `srun` ([srun doc](http
 
 To run an interactive bash on a A40 compute node:
 
-`srun -p interruptible_gpu -c 4 --mem-per-gpu 8G --gpus-per-task 1 --constraint a40 -n 1 --ex
-clude erc-hpc-comp190 --pty bash`
+`srun -p interruptible_gpu -c 4 --mem-per-gpu 8G --gpus-per-task 1 --constraint a40 -n 1 --ex clude erc-hpc-comp190 --pty bash`
 
 [TODO: provide sbatch script]
 
@@ -191,32 +211,31 @@ On a dedicated machine with multiple GPUs, you can launch each instance on a spe
 
 `CUDA_VISIBLE_DEVICES=1 nohup python bvqa.py describe &`
 
-If a single instance uses less than 50% of the GPU VRAM and processing (use `nvidia-smi dmon` to check) 
+If a single instance uses less than 50% of the GPU VRAM and processing (use `nvidia-smi dmon` to check)
 and less than 50% of CPU & RAM then you can send another instance on the same GPU.
 
 ## Tips
 
-Finding the right model and prompts to get good answers is a matter of trial and errors. 
-It requires iteratively crafting the questions to get the desired form and accuracy of responses. 
-Some models need some nudging. 
-And some questions will never be satisfactorily answered by a given model or any curent model. 
+Finding the right model and prompts to get good answers is a matter of trial and errors.
+It requires iteratively crafting the questions to get the desired form and accuracy of responses.
+Some models need some nudging.
+And some questions will never be satisfactorily answered by a given model or any curent model.
 Knowing how to rephrase, reframe or simply stop is a bit of an art.
 
-A recommended method is to work one question at a time with a handful of diverse images. 
-Engineer the prompt to optimise accuracy. If it is high enough, iterate over a slightly larger sample of images. 
-If you are confident the level of error is tolerable and your sample representative enough of the whole collection 
+A recommended method is to work one question at a time with a handful of diverse images.
+Engineer the prompt to optimise accuracy. If it is high enough, iterate over a slightly larger sample of images.
+If you are confident the level of error is tolerable and your sample representative enough of the whole collection
 then the question is worth submitting to all the images.
 
-It is more computationally efficient to prepare all your questions before sending them to the entire collection. 
+It is more computationally efficient to prepare all your questions before sending them to the entire collection.
 Running one question at a time over N images Q times is much slower than running the script once with Q questions over N images.
 
 After running your questions on a larger proportion of your collection, you might want to spot check the responses here and there to get a sense of how good/usable they are.
 
-As prompt engineering is usually very model-specific, moving to another model can be very disruptive. 
+As prompt engineering is usually very model-specific, moving to another model can be very disruptive.
 It aways mean reassessing the answers and often means reformulating many questions from scratch.
 
 ## External references
 
 * [Vision-Language Models for Vision Tasks: A Survey, 2024](https://arxiv.org/abs/2304.00685)
 * [Abdallah, A., Eberharter, D., Pfister, Z. et al. A survey of recent approaches to form understanding in scanned documents. Artif Intell Rev 57, 342 (2024). ](https://link.springer.com/article/10.1007/s10462-024-11000-0#Sec12)
-

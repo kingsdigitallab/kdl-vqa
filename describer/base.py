@@ -92,7 +92,8 @@ class ImageDescriber:
     def get_compute_info(self):
         ret = {
             'type': 'cpu',
-            'desc': 'cpu'
+            'desc': 'cpu',
+            'size': 0
         }
 
         model = self.get_model()

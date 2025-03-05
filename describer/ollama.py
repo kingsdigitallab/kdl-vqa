@@ -3,11 +3,12 @@ from .base import ImageDescriber
 from PIL import Image
 from pathlib import Path
 import datetime, time
+import os
 
 # https://huggingface.co/meta-llama/Llama-3.2-11B-Vision-Instruct
 MODEL_ID = 'llama3.2-vision'
 MODEL_VERSION = '11b'
-BVQA_OLLAMA_HOST = os.getenv('ENV_VAR_NAME', 'http://localhost:11434')
+BVQA_OLLAMA_HOST = os.getenv('BVQA_OLLAMA_HOST', 'http://localhost:11434')
 
 class Ollama(ImageDescriber):
     """Image description using a model served by Ollama.
@@ -35,21 +36,26 @@ class Ollama(ImageDescriber):
             'image_encoding': None,
         }
 
+    def _get_ollama_model_code(self):
+        ret = self.model_id
+        if self.model_version:
+            ret = f'{self.model_id}:{self.model_version}'
+        return ret
+
     def answer_question(self, image_path, question):
         if not self.model:
             self._init_model()
 
-        model_arg = self.model_id
-        if self.model_version:
-            model_arg = f'{self.model_id}:{self.model_version}'
-
         response = self.model.chat(
-            model=model_arg,
+            model=self._get_ollama_model_code(),
             messages=[{
                 'role': 'user',
                 'content': question,
                 'images': [image_path]
-            }]
+            }],
+            options={
+                'temperature': 0
+            }
         )
 
         # example of a response
@@ -77,12 +83,24 @@ class Ollama(ImageDescriber):
     def _init_model(self):
         from ollama import Client
         self.model = Client(host=BVQA_OLLAMA_HOST)
+        # load the model into memory so get_compute_info get stats.
+        # and we separate the load from the actual inference in the logs.
+        res = self.model.generate(model=self._get_ollama_model_code(), prompt='Just say "yes". Nothing else.')
         return self.model
 
     def get_compute_info(self):
         ret = {
             'type': 'ollama',
-            'desc': 'ollama'
+            'desc': 'ollama',
+            'size': 0
         }
+        model = self.get_model()
+
+        if model:
+            res = model.ps()
+            for m in res.models:
+                if self.model_id in m.name:
+                    ret['size'] = m.size
+                    break
 
         return ret

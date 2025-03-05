@@ -125,6 +125,8 @@ Tested on Ubuntu 22.04 LTD, 128GB RAM, RTX 4090 (24GB VRAM), AMD Ryzen Threadrip
 
 By default the describer will call Ollama at http://localhost:11434. You can change this address by setting the BVQA_OLLAMA_HOST environment variable.
 
+Please make sure you have pulled your model with ollama before running the describer.
+
 [List of vision models supported by ollama](https://ollama.com/search?c=vision&o=newesthttps:/).
 
 **smol** and **qwen-vl** models and versions refer to model names on the Hugging Face hub. In principle the describers should be compatible with any model on Hugging Face what was fine tuned or quantised from smol or qwen2-vl or qwen2.5-vl.

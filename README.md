@@ -108,13 +108,15 @@ A describer is a backend for bvqa that provide support for a family of vision la
 | moondream      | [vikhyatk/moondream2](https://huggingface.co/vikhyatk/moondream2)                                 | 2025-01-09                               | 2b:FP16    | 6    | 0:25  |         |   |
 | smol           | [HuggingFaceTB/SmolVLM-Instruct](https://huggingface.co/HuggingFaceTB/SmolVLM-Instruct)           |                                          | 2b:BF16    | 11   | 1:51  |         |   |
 | qwen-vl        | [Qwen/Qwen2-VL-2B-Instruct-GPTQ-Int4](https://huggingface.co/Qwen/Qwen2-VL-2B-Instruct-GPTQ-Int4) |                                          | 2b:int4    | 7    | 4:53  |         |   |
-| qwen-vl        | Qwen/Qwen2.5-VL-3B-Instruct                                                                       |                                          | 3b:BF16    | 126  | OOM   |         |   |
-| qwen-vl        | allenai/olmOCR-7B-0225-preview                                                                    |                                          | 7b:BF16    | 126  | OOM   |         |   |
+| qwen-vl        | Qwen/Qwen2.5-VL-3B-Instruct -o                                                                    |                                          | 3b:BF16    | 21   | 2:49  |         |   |
+| qwen-vl        | allenai/olmOCR-7B-0225-preview -o                                                                 |                                          | 7b:BF16    | 24   | 3:21  |         |   |
 | ollama         | [llama3.2-vision](https://ollama.com/library/llama3.2-vision)                                     |                                          | 11b:Q4_K_M | 11   | 0:59  |         |   |
 | ollama         | [minicpm-v](https://ollama.com/library/minicpm-v)                                                 |                                          | 8b:Q4_0    | 7    | 1:28  |         |   |
 | ollama         | [granite3.2-vision](https://ollama.com/library/granite3.2-vision)                                 |                                          | 2b:Q4_K_M  | 13   | UNRESPONSIVE  |         |   |
 
-Tested on Ubuntu 22.04 LTD, 128GB RAM, RTX 4090 (24GB VRAM), AMD Ryzen Threadripper 1950X 16-Core Processor, CUDA 12.2, Nvidia driver 535.183.01. 2025/03/05. Ollama 0.5.13. Four images and four questions. The duration does not always include time to load the model. But always excludes download. VRAM is rounded up. Largest image is 7360x4912. Models resize the images in different ways, which may affect processing speed and quality of answers. OOM: out of memory error.
+Tested on Ubuntu 22.04 LTD, 128GB RAM, RTX 4090 (24GB VRAM), AMD Ryzen Threadripper 1950X 16-Core Processor, CUDA 12.2, Nvidia driver 535.183.01. 2025/03/05. Ollama 0.5.13. Four images and four questions. The duration does not always include time to load the model. But always excludes download. VRAM is rounded up. Largest image is 7360x4912. Models resize the images in different ways, which may affect processing speed and quality of answers. OOM: out of memory error. 
+
+-o enables flash attention (which requires Ampere, Ada, or Hopper) to reduce memory usage and may increase speed. Without it Qwen would require extremely large amount of VRAM (> 100GB) for a medium/large image (~3000x3000px).
 
 ### describers
 

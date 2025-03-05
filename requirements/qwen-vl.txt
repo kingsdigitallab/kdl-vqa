@@ -5,3 +5,6 @@ git+https://github.com/huggingface/transformers@c0f8d055ce7a218e041e20a06946bf0b
 
 # to run smaller/faster gptq models provided by qwen
 optimum
+# needed for flash_attention_2, which is faster and uses less memory
+# without it some qwen models will go out of memory.
+flash_attn

@@ -8,6 +8,7 @@ import re
 
 MODEL_ID = "Qwen/Qwen2-VL-2B-Instruct-GPTQ-Int4"
 #MODEL_ID = "Qwen/Qwen2.5-VL-3B-Instruct"
+#MODEL_ID = "hfl/Qwen2.5-VL-3B-Instruct-GPTQ-Int4"
 #allenai/olmOCR-7B-0225-preview
 MODEL_VERSION = ''
 MAX_NEW_TOKENS = 512

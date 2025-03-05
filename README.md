@@ -109,7 +109,7 @@ A describer is a backend for bvqa that provide support for a family of vision la
 | smol           | [HuggingFaceTB/SmolVLM-Instruct](https://huggingface.co/HuggingFaceTB/SmolVLM-Instruct)           |                                          | 2b:BF16    | 11   | 1:51  |         |   |
 | qwen-vl        | [Qwen/Qwen2-VL-2B-Instruct-GPTQ-Int4](https://huggingface.co/Qwen/Qwen2-VL-2B-Instruct-GPTQ-Int4) |                                          | 2b:int4    | 7    | 4:53  |         |   |
 | qwen-vl        | Qwen/Qwen2.5-VL-3B-Instruct                                                                       |                                          | 3b:BF16    | 126  | OOM   |         |   |
-| qwen-vl        | allenai/olmOCR-7B-0225-preview                                                                    |                                          | 7b:BF16    |      |       |         |   |
+| qwen-vl        | allenai/olmOCR-7B-0225-preview                                                                    |                                          | 7b:BF16    | 126  | OOM   |         |   |
 | ollama         | [llama3.2-vision](https://ollama.com/library/llama3.2-vision)                                     |                                          | 11b:Q4_K_M | 11   | 0:59  |         |   |
 | ollama         | [minicpm-v](https://ollama.com/library/minicpm-v)                                                 |                                          | 8b:Q4_0    | 7    | 1:28  |         |   |
 | ollama         | [granite3.2-vision](https://ollama.com/library/granite3.2-vision)                                 |                                          | 2b:Q4_K_M  | 13   | UNRESPONSIVE  |         |   |
@@ -128,7 +128,7 @@ By default the describer will call Ollama at http://localhost:11434. You can cha
 
 Please make sure you have pulled your model with ollama before running the describer.
 
-[List of vision models supported by ollama](https://ollama.com/search?c=vision&o=newesthttps:/).
+[List of vision models supported by ollama](https://ollama.com/search?c=vision&o=newest).
 
 **smol** and **qwen-vl** models and versions refer to model names on the Hugging Face hub. In principle the describers should be compatible with any model on Hugging Face what was fine tuned or quantised from smol or qwen2-vl or qwen2.5-vl.
 

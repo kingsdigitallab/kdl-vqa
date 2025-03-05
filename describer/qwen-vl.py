@@ -157,7 +157,7 @@ class QwenVL(ImageDescriber):
 
         self.model = QWenVLForConditionalGeneration.from_pretrained(
             self.model_id, torch_dtype="auto", device_map="auto",
-            attn_implementation="fash_attention_2" if use_attention else "eager"
+            attn_implementation="flash_attention_2" if use_attention else "eager"
         )
 
     def _encode_image(self, image_path):

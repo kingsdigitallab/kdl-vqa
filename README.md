@@ -34,7 +34,7 @@ Early prototype developped by [King's Digital Lab](https://kdl.kcl.ac.uk).
 
 This tool has been tested with Python 3.10 on Linux (22.04) machines with a variety of GPUs (1080ti, 4090).
 
-Although a GPU is not mandatory for the moondream model, processing will be very slow without it. 
+Although a GPU is not mandatory for the moondream model, processing will be very slow without it.
 Some models (e.g. Qwen VL 2.5) may require more recent generation of GPUs to process larger images.
 
 BVQA has a `build` action to create a python virtual environment and install all dependencies automatically.
@@ -95,18 +95,19 @@ Such as:
 
 A describer is a backend for bvqa that provide support for a family of vision language models.
 
-| Describer (-d) | Model (-m)                                                                                        | Version (-v)                             | Size:Quant | VRAM GB | Duration m:s | Max res |   |
-| -------------- | ------------------------------------------------------------------------------------------------- | ---------------------------------------- | ---------- | ---- | ----- | :-------- | --- |
-| moondream      | [moondreamm-0_5b-int8](https://github.com/vikhyat/moondream)                                      | 9dddae84d54db4ac56fe37817aeaeb502ed083e2 | 0.5b:int8  | 0    | 4:50  |         |   |
-| moondream      | moondream-2b-int8                                                                                 | 9dddae84d54db4ac56fe37817aeaeb502ed083e2 | 2b:int8    | 0    |       |         |   |
-| moondream      | [vikhyatk/moondream2](https://huggingface.co/vikhyatk/moondream2)                                 | 2025-01-09                               | 2b:FP16    | 6    | 0:25  |         |   |
-| smol           | [HuggingFaceTB/SmolVLM-Instruct](https://huggingface.co/HuggingFaceTB/SmolVLM-Instruct)           |                                          | 2b:BF16    | 11   | 1:51  |         |   |
-| qwen-vl        | [Qwen/Qwen2-VL-2B-Instruct-GPTQ-Int4](https://huggingface.co/Qwen/Qwen2-VL-2B-Instruct-GPTQ-Int4) |                                          | 2b:int4    | 7    | 4:53  |         |   |
-| qwen-vl        | Qwen/Qwen2.5-VL-3B-Instruct -o                                                                    |                                          | 3b:BF16    | 21   | 2:49  |         |   |
-| qwen-vl        | allenai/olmOCR-7B-0225-preview -o                                                                 |                                          | 7b:BF16    | 24   | 3:21  |         |   |
-| ollama         | [llama3.2-vision](https://ollama.com/library/llama3.2-vision)                                     |                                          | 11b:Q4_K_M | 11   | 0:59  |         |   |
-| ollama         | [minicpm-v](https://ollama.com/library/minicpm-v)                                                 |                                          | 8b:Q4_0    | 7    | 1:28  |         |   |
-| ollama         | [granite3.2-vision](https://ollama.com/library/granite3.2-vision)                                 |                                          | 2b:Q4_K_M  | 13   | UNRESPONSIVE  |         |   |
+
+| Describer (-d) | Model (-m)                                                                                        | Size-Quant | VRAM GB | Duration m:s | Max res   |
+| ---------------- | --------------------------------------------------------------------------------------------------- | ------------ | --------- | -------------- | :---------- |
+| moondream      | [moondreamm-0_5b-int8](https://github.com/vikhyat/moondream)                                      | 0.5b-int8  | 0       | 4:50         |           |
+| moondream      | moondream-2b-int8                                                                                 | 2b-int8    | 0       | ?            |           |
+| moondream      | [vikhyatk/moondream2](https://huggingface.co/vikhyatk/moondream2)                                 | 2b:FP16    | 6       | 0:25         |           |
+| smol           | [HuggingFaceTB/SmolVLM-Instruct](https://huggingface.co/HuggingFaceTB/SmolVLM-Instruct)           | 2b:BF16    | 11      | 1:51         |           |
+| qwen-vl        | [Qwen/Qwen2-VL-2B-Instruct-GPTQ-Int4](https://huggingface.co/Qwen/Qwen2-VL-2B-Instruct-GPTQ-Int4) | 2b:int4    | 7       | 4:53         | unlimited |
+| qwen-vl        | Qwen/Qwen2.5-VL-3B-Instruct -o                                                                    | 3b:BF16    | 21      | 2:49         |           |
+| qwen-vl        | allenai/olmOCR-7B-0225-preview -o                                                                 | 7b:BF16    | 24      | 3:21         |           |
+| ollama         | [llama3.2-vision](https://ollama.com/library/llama3.2-vision)                                     | 11b:Q4_K_M | 11      | 0:59         |           |
+| ollama         | [minicpm-v](https://ollama.com/library/minicpm-v)                                                 | 8b:Q4_0    | 7       | 1:28         |           |
+| ollama         | [granite3.2-vision](https://ollama.com/library/granite3.2-vision)                                 | 2b:Q4_K_M  | 13      | UNRESPONSIVE |           |
 
 *Tested on Ubuntu 22.04 LTD, 128GB RAM, RTX 4090 (24GB VRAM), AMD Ryzen Threadripper 1950X 16-Core Processor, CUDA 12.2, Nvidia driver 535.183.01. 2025/03/05. Ollama 0.5.13. Four images and four questions. The duration does not always include time to load the model. But always excludes download. VRAM is rounded up. Largest image is 7360x4912. Models resize the images in different ways, which may affect processing speed and quality of answers. OOM: out of memory error.*
 
@@ -116,13 +117,13 @@ A describer is a backend for bvqa that provide support for a family of vision la
 
 #### moondream
 
-**moondream-*-int8** models work on CPU only. The model name and version refer to the filename and version stored on github moondream repository.
+**moondream-*-int8** models work on CPU only. The model name refer to the filename stored on github moondream repository.
 
-**vikhyatk/moondream2** model works on GPU only. It's name and version match those on the Hugging Face model card.
+**vikhyatk/moondream2** model works on GPU only. Its name matches the one Hugging Face Hub.
 
 #### ollama
 
-**ollama** model names refer to the exact names used by ollama to pull or run them. The version refers to the size (e.g. 2b) and quantisation. If unspecified, the default size and quantisation are as specified on ollama library.
+**ollama** model names refer to the exact names used by Ollama to pull or run them. The version (-v) refers to the size (e.g. 2b) and quantisation. If unspecified, the default values come from Ollama library.
 
 By default the describer will call Ollama at http://localhost:11434. You can change this address by setting the BVQA_OLLAMA_HOST environment variable.
 
@@ -265,4 +266,3 @@ It aways mean reassessing the answers and often means reformulating many questio
 
 * [Vision-Language Models for Vision Tasks: A Survey, 2024](https://arxiv.org/abs/2304.00685)
 * [Abdallah, A., Eberharter, D., Pfister, Z. et al. A survey of recent approaches to form understanding in scanned documents. Artif Intell Rev 57, 342 (2024). ](https://link.springer.com/article/10.1007/s10462-024-11000-0#Sec12)
-

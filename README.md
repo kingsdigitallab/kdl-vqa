@@ -135,6 +135,9 @@ Please make sure you have pulled your model with ollama before running the descr
 
 **smol** and **qwen-vl** models and versions refer to model names on the Hugging Face hub. In principle the describers should be compatible with any model on Hugging Face what was fine tuned or quantised from smol or qwen2-vl or qwen2.5-vl.
 
+Qwen models can crash as they eat up extraordinary amount of VRAM. To keep it under control use the `-o` flag with your `describe` action. It will use flash_attention to drastically reduce memory use. 
+Note that this can only be used on more recent generations of GPUs. The use -o flag is documented in the model column of the above table.
+
 ## Reviewing (`report`)
 
 The `report` action (`python bvqa.py report`) generates a HTML document

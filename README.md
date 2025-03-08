@@ -30,6 +30,8 @@ Early prototype developped by [King's Digital Lab](https://kdl.kcl.ac.uk).
 
 ![Workflow](doc/bvqa-workflow.jpg)
 
+[Example of a report on test data with various vision language models](https://github.com/kingsdigitallab/kdl-vqa/blob/main/doc/bvqa-tests-2025-03-07.pdf)
+
 ## Requirements
 
 This tool has been tested with Python 3.10 on Linux (22.04) machines with a variety of GPUs (1080ti, 4090).

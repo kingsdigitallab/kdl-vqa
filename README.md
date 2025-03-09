@@ -30,6 +30,8 @@ Early prototype developped by [King's Digital Lab](https://kdl.kcl.ac.uk).
 
 ![Workflow](doc/bvqa-workflow.jpg)
 
+[Example of a report on test data with various vision language models](https://github.com/kingsdigitallab/kdl-vqa/blob/main/doc/bvqa-tests-2025-03-07.pdf)
+
 ## Requirements
 
 This tool has been tested with Python 3.10 on Linux (22.04) machines with a variety of GPUs (1080ti, 4090).
@@ -103,8 +105,8 @@ A describer is a backend for bvqa that provide support for a family of vision la
 | moondream      | [vikhyatk/moondream2](https://huggingface.co/vikhyatk/moondream2)                                 | 2b:FP16    | 6       | 0:25         |           |
 | smol           | [HuggingFaceTB/SmolVLM-Instruct](https://huggingface.co/HuggingFaceTB/SmolVLM-Instruct)           | 2b:BF16    | 11      | 1:51         |           |
 | qwen-vl        | [Qwen/Qwen2-VL-2B-Instruct-GPTQ-Int4](https://huggingface.co/Qwen/Qwen2-VL-2B-Instruct-GPTQ-Int4) | 2b:int4    | 7       | 4:53         | unlimited |
-| qwen-vl        | Qwen/Qwen2.5-VL-3B-Instruct -o                                                                    | 3b:BF16    | 21      | 2:49         |           |
-| qwen-vl        | allenai/olmOCR-7B-0225-preview -o                                                                 | 7b:BF16    | 24      | 3:21         |           |
+| qwen-vl        | [Qwen/Qwen2.5-VL-3B-Instruct](https://huggingface.co/Qwen/Qwen2.5-VL-3B-Instruct) -o              | 3b:BF16    | 21      | 2:49         |           |
+| qwen-vl        | [allenai/olmOCR-7B-0225-preview](https://huggingface.co/allenai/olmOCR-7B-0225-preview) -o        | 7b:BF16    | 24      | 3:21         |           |
 | ollama         | [llama3.2-vision](https://ollama.com/library/llama3.2-vision)                                     | 11b:Q4_K_M | 11      | 0:59         |           |
 | ollama         | [minicpm-v](https://ollama.com/library/minicpm-v)                                                 | 8b:Q4_0    | 7       | 1:28         |           |
 | ollama         | [granite3.2-vision](https://ollama.com/library/granite3.2-vision)                                 | 2b:Q4_K_M  | 13      | UNRESPONSIVE |           |
@@ -134,6 +136,9 @@ Please make sure you have pulled your model with ollama before running the descr
 #### smol and qwen-vl
 
 **smol** and **qwen-vl** models and versions refer to model names on the Hugging Face hub. In principle the describers should be compatible with any model on Hugging Face what was fine tuned or quantised from smol or qwen2-vl or qwen2.5-vl.
+
+Qwen models can crash as they eat up extraordinary amount of VRAM. To keep it under control use the `-o` flag with your `describe` action. It will use flash_attention to drastically reduce memory use. 
+Note that this can only be used on more recent generations of GPUs. The use -o flag is documented in the model column of the above table.
 
 ## Reviewing (`report`)
 

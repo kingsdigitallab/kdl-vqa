@@ -1,0 +1,3 @@
+# https://huggingface.co/AIDC-AI/Ovis2-1B#usage
+# pip install torch==2.4.0 
+transformers==4.46.2

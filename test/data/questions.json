@@ -1,6 +1,6 @@
 {
     "long_description": "Provide a long and detailed description of the image.",
-    "location": "Is the photograph taken 'indoor' or 'outdoor'? Answer with one word only.",
-    "objects": "List the name of objects in this image.",
-    "text": "Extract all the text from the image into a JSON object."
+    "location": "Is the photograph taken 'indoor' or 'outdoor'? If not a photograph, return 'N/A'. Answer with one word only. ",
+    "objects": "List the name of the objects in this image. Returns only a comma separated list.",
+    "text": "Extract all the text from the image into a JSON object. For a form, ensure the key is a question or label and the value is a response."
 }

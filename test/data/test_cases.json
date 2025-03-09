@@ -11,5 +11,10 @@
     },
     "clark": {
         "location": ["indoor"]
+    },
+    "form": {
+        "long_description": ["Streetcar Magazine"],
+        "location": ["N/A"],
+        "text": ["Tour", "Recital", "50% off with SBO", "renew old memories"]
     }
 }

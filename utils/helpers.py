@@ -92,3 +92,20 @@ def get_image_paths_sculpting(filter=None):
 def _error(message):
     print(f'ERROR: {message}')
     exit()
+
+def get_repeat_ratio(answer):
+    from collections import Counter
+    ret = 0.0
+    answer = f'{answer}'
+    words = re.findall(r'\w+', answer)
+    words.pop()
+    l = 1
+    while True:
+        if len(words) < 2*l: break
+        if ' '.join(words[-l:]) == ' '.join(words[-2*l:-l]):
+            print(words[-l:])
+            ret = 1.0
+            break
+        l += 1
+
+    return ret

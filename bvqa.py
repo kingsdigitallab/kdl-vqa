@@ -9,7 +9,7 @@ import os
 # this app
 # from questions import questions
 from describer.base import ImageDescriber
-from utils.helpers import Timer, get_image_paths, _error, read_test_cases
+from utils.helpers import Timer, get_image_paths, _error, read_test_cases, get_repeat_ratio
 
 # CUDA_VISIBLE_DEVICES='' python [...] # to force CPU
 # CUDA_VISIBLE_DEVICES=1 python [...] # to force 2nd GPU
@@ -259,6 +259,9 @@ class FrameQuestionAnswers:
                         question = questions[question_key]
                         # question contains 'json' and the answer is valid json, convert to dict
                         if 'json' in question.lower():
+                            inner_json = re.findall(r"'''json\s*(\{.*\})\s*'''", answer)
+                            if inner_json:
+                                answer = inner_json[0]
                             try:
                                 answer = json.loads(answer)
                             except json.JSONDecodeError as e:
@@ -465,6 +468,10 @@ class FrameQuestionAnswers:
         report_path = self.get_path('report')
         data_path = self.get_path('data')
 
+        questions = self.read_questions()
+        questions_html = ''.join([f'<li><strong>{k}</strong>: {v}</li>' for k,v in questions.items()])
+        questions_html = f'<ul>{questions_html}</ul>'
+
         # TODO: summary = table with accuracy % for each model vs question.
         # Could also summarise the time. See gh-10
         summary = ''
@@ -478,6 +485,9 @@ class FrameQuestionAnswers:
             image_relative_path = image_path.relative_to(report_path.parent)
             images += f'<a href="{image_relative_path}"><img src="{image_relative_path}"></a>'
             answers_path = self.get_answer_path(image_path)
+
+            questions = self.read_questions()
+
             if answers_path.exists():
                 answers = json.loads(answers_path.read_text())
                 for model_id, model_info in answers.get('models', {}).items():
@@ -485,35 +495,58 @@ class FrameQuestionAnswers:
                     images += f'<h4>{model_id}</h4>'
                     images += '<ul>'
                     for question_key, question_info in model_info['questions'].items():
+                        if question_key not in questions: continue
+
                         if self.question_keys and question_key not in self.question_keys: continue
+
                         correctness = ''
                         is_correct = question_info.get('correct', None)
+                        repeat_ratio = get_repeat_ratio(question_info["answer"])
                         if is_correct == 0:
                             correctness = '<span class="incorrect">[WRONG]</span>'
                         if is_correct == 1:
                             correctness = '<span class="correct">[RIGHT]</span>'
+                        if repeat_ratio > 0.5:
+                            correctness += f'<span class="repeat">[REPEAT]</span>'
+                            if is_correct is None:
+                                is_correct = 0
                         images += f'<li><span class="question-key">{question_key}</span>: {correctness} {question_info["answer"]}</li>'
 
                         if model_id not in stats:
                             stats[model_id] = {}
                         if question_key not in stats[model_id]:
-                            stats[model_id][question_key] = {'correct': 0, 'total': 0}
+                            stats[model_id][question_key] = {'correct': 0, 'total': 0, 'repeat': 0}
                         if is_correct is not None:
                             stats[model_id][question_key]['total'] += 1
                         if is_correct == 1:
                             stats[model_id][question_key]['correct'] += 1
+                        if repeat_ratio > 0.5:
+                            stats[model_id][question_key]['repeat'] += 1
 
                     images += '</ul>'
 
             images += '</div>'
 
+        header = ''
+        for question_key in questions:
+            header += f'<th>{question_key}</th>'
+        header = f'<tr><th>model</th>{header}</tr>'
+
         for model_id, model_info in stats.items():
-            summary += f'<h3>{model_id}</h3>'
-            for question_key, question_info in model_info.items():
-                accuracy = 0
-                if question_info['total']:
-                    accuracy = question_info['correct'] / question_info['total']
-                summary += f'<p>{question_key}: {accuracy * 100:.1f}% ({question_info["correct"]} / {question_info["total"]})</p>'
+            row = f'<td>{model_id[:30]}</td>'
+            for question_key in questions:
+            # for question_key, question_info in model_info.items():
+                question_info = model_info.get(question_key, None)
+                if question_info and question_info['total']:
+                    accuracy = 0
+                    if question_info['total']:
+                        accuracy = question_info['correct'] / question_info['total']
+                    row += f'<td>{accuracy * 100:.1f}% ({question_info["correct"]} / {question_info["total"]})</td>'
+                else:
+                    row += f'<td></td>'
+            summary += f'<tr>{row}</tr>'
+        
+        summary = f'<table>{header}{summary}</table>'
 
         # TODO: improve HTML format, and move template to external file
         content = ('''
@@ -533,10 +566,20 @@ class FrameQuestionAnswers:
             .incorrect {
                 background-color: pink;
             }
+            .repeat {
+                background-color: orange;
+            }
+            table, th, td {
+                border: 1px solid black;
+                border-collapse: collapse;
+                padding: 0.2em;
+            }
             </style>
         </head>
         <body>
-            <h2>Summary</h2>''' +
+            <h2>Questions</h2>''' +
+        questions_html +
+        '''<h2>Summary</h2>''' +
         summary +
         '''<h2>Images</h2>''' +
         images +
@@ -544,6 +587,8 @@ class FrameQuestionAnswers:
         </body>
         </html>''')
         report_path.write_text(content)
+
+        print(f'WRITTEN {report_path}')
 
 
 if __name__ == '__main__':

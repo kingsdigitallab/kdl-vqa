@@ -8,7 +8,7 @@ ltt install -r ovis.txt
 FLASH_ATTN_VERSION="2.7.4.post1"
 # this method requires nvcc
 # CUDA_VERSION=$(nvcc --version | grep -oP 'release \K[0-9]+')
-CUDA_VERSION=$(nvidia-smi | grep -oP 'CUDA Version: \K[0-9]+\.[0-9]+')
+CUDA_VERSION=$(nvidia-smi | grep -oP 'CUDA Version: \K[0-9]+')
 PYTHON_VERSION=$(python -c 'import sys; print(f"{sys.version_info.major}{sys.version_info.minor}")')
 TORCH_VERSION=$(python -c "import torch; print(f'''{torch.__version__.split('.')[0]}.{torch.__version__.split('.')[1]}''')");
 FLASH_ATTN_WHEEL="flash_attn-${FLASH_ATTN_VERSION}+cu${CUDA_VERSION}torch${TORCH_VERSION}cxx11abiTRUE-cp${PYTHON_VERSION}-cp${PYTHON_VERSION}-linux_x86_64.whl"

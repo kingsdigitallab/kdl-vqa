@@ -10,10 +10,14 @@ MAX_NEW_TOKENS = 512
 
 
 class Ovis(ImageDescriber):
-    """Image description using SmolVLM model.
+    """Image description using Ovis model.
+
+    1.27B params, BF16
 
     https://huggingface.co/AIDC-AI/Ovis2-1B
-    1.27B params, BF16
+    https://github.com/AIDC-AI/Ovis
+
+    Works on CPU but extremely slow, even 1B model.
     """    
     
     def __init__(self, model_id='', model_version=''):
@@ -88,21 +92,25 @@ class Ovis(ImageDescriber):
             print('WARNING: running model on CPU')
             self._new_model()
 
-        from transformers import AutoProcessor
-        self.processor = AutoProcessor.from_pretrained(self.model_id)
-
         return self.model
     
     def _new_model(self, use_cuda=False, use_attention=False):
         from transformers import AutoModelForCausalLM
         import torch
 
-        self.model = AutoModelForCausalLM.from_pretrained(
-            self.model_id,
+        options = dict(
             torch_dtype=torch.bfloat16,
             multimodal_max_length=32768,
-            trust_remote_code=True
+            trust_remote_code=True,
         )
+
+        # https://github.com/AIDC-AI/Ovis/issues/64#issuecomment-2686944605
+        if not use_cuda:
+            options['device_map'] = 'cpu'
+        if not use_attention:
+            options['llm_attn_implementation'] = 'eager'
+
+        self.model = AutoModelForCausalLM.from_pretrained(self.model_id, **options)
         if use_cuda:
             self.model = self.model.cuda()
 

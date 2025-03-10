@@ -262,7 +262,7 @@ After running your questions on a larger proportion of your collection, you migh
 As prompt engineering is usually very model-specific, moving to another model can be very disruptive.
 It aways mean reassessing the answers and often means reformulating many questions from scratch.
 
-## Design principles
+## Guiding principles
 
 * Reproducibility
 * Ease of use

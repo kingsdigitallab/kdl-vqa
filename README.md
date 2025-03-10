@@ -264,10 +264,11 @@ It aways mean reassessing the answers and often means reformulating many questio
 
 ## Design principles
 
-* Ease of use
 * Reproducibility
-* Modularity
-* Parallel processing
+* Ease of use
+* Local or open models (b/c proprietary APIs are not reproducible in the long term)
+* Modularity & extensibility
+* Parallel processing & optimisations
 
 ## External references
 

@@ -5,9 +5,9 @@ a series of predefined questions
 to a visual language model (VLM) about a collection of images.
 It saves the answers in json files (one file per image).
 
-A **describer** is a backend for a family of vision language models.
+In this tool, a **describer** is a backend for a family of vision language models.
 
-Early prototype developped by [King's Digital Lab](https://kdl.kcl.ac.uk).
+**Status**: prototype developped by [King's Digital Lab](https://kdl.kcl.ac.uk) to support research projects in digital humanities. (Note that we don't have dedicated funding or resources to maintain this application.)
 
 ## Main use cases
 
@@ -68,7 +68,7 @@ Always activate the environment before invoking an action that involves a descri
 
 ### Generate descriptions
 
-`python bvqa.py describe`
+`python bvqa.py -d moondream describe`
 
 ### Output
 
@@ -134,12 +134,13 @@ Please make sure you have pulled your model with ollama before running the descr
 
 [List of vision models supported by ollama](https://ollama.com/search?c=vision&o=newest).
 
-#### smol and qwen-vl
+#### smol, qwen-vl, ovis
 
-**smol** and **qwen-vl** models and versions refer to model names on the Hugging Face hub. In principle the describers should be compatible with any model on Hugging Face what was fine tuned or quantised from smol or qwen2-vl or qwen2.5-vl.
+For those describers, the models refer to model names on the Hugging Face hub. In principle the describers should be compatible with any model on Hugging Face what was fine tuned or quantised from smol or qwen2-vl or qwen2.5-vl.
 
-Qwen models can crash as they eat up extraordinary amount of VRAM. To keep it under control use the `-o` flag with your `describe` action. It will use flash_attention to drastically reduce memory use. 
-Note that this can only be used on more recent generations of GPUs. The use -o flag is documented in the model column of the above table.
+**Qwen** models can crash as they eat up extraordinary amount of VRAM. To keep it under control use the `-o` flag with your `describe` action. It will use flash_attention to drastically reduce memory use. However the flash attention libraries need more recent generations of GPUs. The use -o flag is documented in the model column of the above table.
+
+**ovis** despite being small, fast and using very little VRAM, this model requires more recent GPUs due to the reliance on flash_attn package which we found often difficult to install or run on various machines.
 
 ## Reviewing (`report`)
 
@@ -270,5 +271,7 @@ It aways mean reassessing the answers and often means reformulating many questio
 
 ## External references
 
+* [A Dive into Vision-Language Models](https://huggingface.co/blog/vision_language_pretraining)
+* [An Introduction to Vision-Language Modeling](https://arxiv.org/abs/2405.17247v1)
 * [Vision-Language Models for Vision Tasks: A Survey, 2024](https://arxiv.org/abs/2304.00685)
 * [Abdallah, A., Eberharter, D., Pfister, Z. et al. A survey of recent approaches to form understanding in scanned documents. Artif Intell Rev 57, 342 (2024). ](https://link.springer.com/article/10.1007/s10462-024-11000-0#Sec12)

@@ -1,6 +1,6 @@
 # first argument should be the describer name, moondream if not specified
 DESCRIBER=$1
-$MODEL=$2
+MODEL=$2
 if [ $# -eq 0 ]; then
     DESCRIBER="moondream"
 fi

@@ -311,7 +311,7 @@ class FrameQuestionAnswers:
             if pattern.lower() in str(image_path).lower():
                 conditions = question_conditions.get(question_key, [])
                 if conditions:
-                    answer = f'{answer_info['answer']}'
+                    answer = f"{answer_info['answer']}"
                     for condition in conditions:
                         regex = condition
                         if condition.startswith('-'):

@@ -108,6 +108,7 @@ A describer is a backend for bvqa that provide support for a family of vision la
 | qwen-vl        | [Qwen/Qwen2.5-VL-3B-Instruct](https://huggingface.co/Qwen/Qwen2.5-VL-3B-Instruct) -o              | 3b:BF16    | 21      | 2:49         |           |
 | qwen-vl        | [allenai/olmOCR-7B-0225-preview](https://huggingface.co/allenai/olmOCR-7B-0225-preview) -o        | 7b:BF16    | 24      | 3:21         |           |
 | ovis           | [AIDC-AI/Ovis2-1B](https://huggingface.co/AIDC-AI/Ovis2-1B) -o                                    | 1b:BF16    | 3       | 0:42         |           |
+| ovis           | [AIDC-AI/Ovis2-4B](https://huggingface.co/AIDC-AI/Ovis2-4B) -o                                    | 4b:BF16    | 10      | 1:01         |           |
 | ollama         | [llama3.2-vision](https://ollama.com/library/llama3.2-vision)                                     | 11b:Q4_K_M | 12      | 0:59         |           |
 | ollama         | [minicpm-v](https://ollama.com/library/minicpm-v)                                                 | 8b:Q4_0    | 7       | 1:28         |           |
 | ollama         | [granite3.2-vision](https://ollama.com/library/granite3.2-vision)                                 | 2b:Q4_K_M  | 13      | UNRESPONSIVE |           |

@@ -13,8 +13,8 @@
         "location": ["indoor"]
     },
     "form": {
-        "long_description": ["Streetcar Magazine"],
+        "long_description": ["streetcar museum"],
         "location": ["N/A"],
-        "text": ["Tour", "Recital", "50% off with SBO", "renew old memories"]
+        "text": ["tour", "recital", "50% off with sbo", "renew old memories"]
     }
 }

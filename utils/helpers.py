@@ -103,7 +103,6 @@ def get_repeat_ratio(answer):
     while True:
         if len(words) < 2*l: break
         if ' '.join(words[-l:]) == ' '.join(words[-2*l:-l]):
-            print(words[-l:])
             ret = 1.0
             break
         l += 1

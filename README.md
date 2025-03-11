@@ -30,7 +30,7 @@ In this tool, a **describer** is a backend for a family of vision language model
 
 ![Workflow](doc/bvqa-workflow.jpg)
 
-[Example of a report on test data with various vision language models](https://github.com/kingsdigitallab/kdl-vqa/blob/main/doc/bvqa-tests-2025-03-07.pdf)
+[Example of a report on test data with various vision language models](https://github.com/kingsdigitallab/kdl-vqa/blob/main/doc/bvqa-tests-2025-03-11.pdf)
 
 ## Requirements
 
@@ -107,7 +107,7 @@ A describer is a backend for bvqa that provide support for a family of vision la
 | qwen-vl        | [Qwen/Qwen2-VL-2B-Instruct-GPTQ-Int4](https://huggingface.co/Qwen/Qwen2-VL-2B-Instruct-GPTQ-Int4) | 2b:int4    | 7       | 4:53         | unlimited |
 | qwen-vl        | [Qwen/Qwen2.5-VL-3B-Instruct](https://huggingface.co/Qwen/Qwen2.5-VL-3B-Instruct) -o              | 3b:BF16    | 21      | 2:49         |           |
 | qwen-vl        | [allenai/olmOCR-7B-0225-preview](https://huggingface.co/allenai/olmOCR-7B-0225-preview) -o        | 7b:BF16    | 24      | 3:21         |           |
-| ovis           | [AIDC-AI/Ovis2-1B](https://huggingface.co/AIDC-AI/Ovis2-1B)                                       | 1b:BF16    | 3       | 0:42         |           |
+| ovis           | [AIDC-AI/Ovis2-1B](https://huggingface.co/AIDC-AI/Ovis2-1B) -o                                    | 1b:BF16    | 3       | 0:42         |           |
 | ollama         | [llama3.2-vision](https://ollama.com/library/llama3.2-vision)                                     | 11b:Q4_K_M | 12      | 0:59         |           |
 | ollama         | [minicpm-v](https://ollama.com/library/minicpm-v)                                                 | 8b:Q4_0    | 7       | 1:28         |           |
 | ollama         | [granite3.2-vision](https://ollama.com/library/granite3.2-vision)                                 | 2b:Q4_K_M  | 13      | UNRESPONSIVE |           |
@@ -140,7 +140,7 @@ For those describers, the models refer to model names on the Hugging Face hub. I
 
 **Qwen** models can crash as they eat up extraordinary amount of VRAM. To keep it under control use the `-o` flag with your `describe` action. It will use flash_attention to drastically reduce memory use. However the flash attention libraries need more recent generations of GPUs. The use -o flag is documented in the model column of the above table.
 
-**ovis** despite being small, fast and using very little VRAM, this model requires more recent GPUs due to the reliance on flash_attn package which we found often difficult to install or run on various machines.
+**ovis** also greatly benefits from `-o` (flash attention), reducing the VRAM use by 3x.
 
 ## Reviewing (`report`)
 
@@ -205,7 +205,8 @@ You can combine this with the -f option to test on a few images only.
 
 The -r option tells the tool to ignore the cache.
 When supplied, it will always ask the questions again.
-This is useful in the case where you want to compare the performance between different computing devices (e.g. Nvidia A100 vs L40s GPUs) to estimate the total duration on your entire collection.
+This is useful in the case where you want to compare the performance between different computing devices 
+(e.g. Nvidia A100 vs L40s GPUs) to estimate the total duration on your entire collection.
 
 ## Parallelism
 

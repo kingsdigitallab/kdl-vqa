@@ -141,6 +141,8 @@ class FrameQuestionAnswers:
         '''Submit questions about multiple images to a visual model & save answers.'''
         self.new_describer()
 
+        print(f'Describe with describer = {self.describer_name} ; model = {self.describer.get_name()}.')
+
         self.timer.step(f'model: {self.describer.get_name()}')
         import socket
         self.timer.step(f'host : {socket.gethostname()}')

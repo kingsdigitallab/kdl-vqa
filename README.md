@@ -28,7 +28,7 @@ In this tool, a **describer** is a backend for a family of vision language model
 * **reporting**: export images and answers to a web page for manual review by non-technical people (e.g. domain experts)
 * **test cases**: write your test cases (image, question -> expected answer) to automate evaluation of prompt and model performance
 
-![Workflow](doc/report-light3.svg)
+<img src="doc/report-light3.svg" width="100%">
 
 [Example of a report on test data with various vision language models](https://github.com/kingsdigitallab/kdl-vqa/blob/main/doc/bvqa-tests-2025-03-11.pdf)
 

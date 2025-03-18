@@ -261,7 +261,7 @@ class FrameQuestionAnswers:
                         question = questions[question_key]
                         # question contains 'json' and the answer is valid json, convert to dict
                         if 'json' in question.lower():
-                            inner_json = re.findall(r"'''json\s*(\{.*\})\s*'''", answer)
+                            inner_json = re.findall(r"('''|```)json\s*(\{.*\})\s*('''|```)", answer)
                             if inner_json:
                                 answer = inner_json[0]
                             try:
@@ -580,6 +580,7 @@ class FrameQuestionAnswers:
             .format-json {
                 font-family: "Lucida Console", Monaco, monospace;
                 display: block;
+                font-size: 0.8em;
             }
             </style>
         </head>

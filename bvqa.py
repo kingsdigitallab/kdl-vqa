@@ -263,7 +263,7 @@ class FrameQuestionAnswers:
                         if 'json' in question.lower():
                             inner_json = re.findall(r"('''|```)json\s*(\{.*\})\s*('''|```)", answer)
                             if inner_json:
-                                answer = inner_json[0]
+                                answer = inner_json[0][1]
                             try:
                                 answer = json.loads(answer)
                             except json.JSONDecodeError as e:

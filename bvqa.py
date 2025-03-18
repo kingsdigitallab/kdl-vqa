@@ -9,7 +9,7 @@ import os
 # this app
 # from questions import questions
 from describer.base import ImageDescriber
-from utils.helpers import Timer, get_image_paths, _error, read_test_cases, get_repeat_ratio
+from utils.helpers import Timer, get_image_paths, _error, read_test_cases, get_repeat_ratio, format_answer
 
 # CUDA_VISIBLE_DEVICES='' python [...] # to force CPU
 # CUDA_VISIBLE_DEVICES=1 python [...] # to force 2nd GPU
@@ -512,7 +512,8 @@ class FrameQuestionAnswers:
                             correctness += f'<span class="repeat">[REPEAT]</span>'
                             if is_correct is None:
                                 is_correct = 0
-                        images += f'<li><span class="question-key">{question_key}</span>: {correctness} {question_info["answer"]}</li>'
+                        answer_html = format_answer(question_info['answer'])
+                        images += f'<li><span class="question-key">{question_key}</span>: {correctness} {answer_html}</li>'
 
                         if model_id not in stats:
                             stats[model_id] = {}
@@ -575,6 +576,10 @@ class FrameQuestionAnswers:
                 border: 1px solid black;
                 border-collapse: collapse;
                 padding: 0.2em;
+            }
+            .format-json {
+                font-family: "Lucida Console", Monaco, monospace;
+                display: block;
             }
             </style>
         </head>

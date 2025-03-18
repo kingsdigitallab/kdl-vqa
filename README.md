@@ -99,7 +99,7 @@ A describer is a backend for bvqa that provide support for a family of vision la
 
 
 | Describer (-d) | Model (-m)                                                                                        | Size-Quant | VRAM GB | Duration m:s | Max res   |
-| ---------------- | --------------------------------------------------------------------------------------------------- | ------------ | --------- | -------------- | :---------- |
+| -------------- | ------------------------------------------------------------------------------------------------- | ---------- | ------- | ------------ | :-------- |
 | moondream      | [moondreamm-0_5b-int8](https://github.com/vikhyat/moondream)                                      | 0.5b-int8  | 0       | 4:50         |           |
 | moondream      | moondream-2b-int8                                                                                 | 2b-int8    | 0       | ?            |           |
 | moondream      | [vikhyatk/moondream2](https://huggingface.co/vikhyatk/moondream2)                                 | 2b:FP16    | 6       | 0:25         |           |
@@ -179,7 +179,7 @@ will have the generated answer to the 'location' question considered correct
 if it that answer contains the word 'library' and not 'shop'.
 The answer to the long_description will be considered correct if it contains 'book' or 'volume'.
 
-The conditions are python regular expression patterns.
+The conditions are python case-insensitive regular expression patterns.
 Except for the optional minus sign at the start, which denotes a negative pattern.
 
 `python bvqa.py -t` will read your test cases from `data/test_cases.json`,

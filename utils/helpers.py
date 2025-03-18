@@ -108,3 +108,15 @@ def get_repeat_ratio(answer):
         l += 1
 
     return ret
+
+def format_answer(answer):
+    ret = f'{answer}'.strip()
+
+    if ret.startswith('{') and ret.endswith('}') and not isinstance(answer, str):
+        # format as json
+        ret = json.dumps(answer, indent=2)
+        ret = f'<span class="format-json">{ret}</span>'
+        ret = re.sub('\n +', lambda m: '<br>' + ('&nbsp;' * (len(m.group(0)) - 1)), ret)
+        ret = ret.replace('\n', '<br>')
+
+    return ret

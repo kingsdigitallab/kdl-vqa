@@ -92,6 +92,7 @@ Such as:
 * -q to filter which question(s) to ask (can be used multiple times)
 * -R to use a different root folder for your data
 * -t to run your test cases (see section below)
+* -o to enable VRAM or speed optimisisation such as Flash Attention (not possible on all GPUs)
 
 ## Describers and models
 

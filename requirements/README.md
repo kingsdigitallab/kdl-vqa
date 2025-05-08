@@ -5,7 +5,7 @@ The installation is launched by bvqa `build` command. It creates a separate pyth
 For a given describer D, it will:
 1. install the base requirements from `base.txt`
 2. install the specific requirements from `D.bash`
-3. if D.bash does not exist, it will use the default requirements from `base.txt`
+3. if D.bash does not exist, it will use the default requirements from `D.txt`
 
 Guidelines for maintainers:
 - try to pin your dependencies to a specific version whenever possible

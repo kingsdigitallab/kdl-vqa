@@ -23,7 +23,7 @@ from utils.helpers import Timer, get_image_paths, _error, read_test_cases, get_r
 # read BVQA_VENVS from environment variable
 BVQA_VENVS = os.getenv('BVQA_VENVS', 'venvs')
 
-VERSION = '0.2.0'
+VERSION = '0.3.0'
 # TODO: use a 'dummy' model
 DUMMY_DESCRIPTIONS = 0
 DESCRIBE_IMAGE_LOCK_TIMEOUT_IN_SECONDS = 2 * 60
@@ -220,7 +220,7 @@ class FrameQuestionAnswers:
                 self.timer.step(f'WARNING: error reading {str(qas_path)}')
                 return
 
-        ret = self.upgrade_answers_format(ret)
+        ret = self.upgrade_answers_format(ret, image_path)
 
         if DUMMY_DESCRIPTIONS:
             ret = None
@@ -329,7 +329,7 @@ class FrameQuestionAnswers:
 
         return ret
 
-    def upgrade_answers_format(self, answers):
+    def upgrade_answers_format(self, answers, image_path):
         ret = answers
             
         if ret:
@@ -351,7 +351,11 @@ class FrameQuestionAnswers:
                         ret['models'] = models
                         del ret['questions']
                         ret['meta']['version'] = '0.2.0'
-                    
+
+                    if version == '0.2.0':
+                        # added meta.image.path
+                        ret['meta']['version'] = '0.3.0'
+
                     if ret['meta']['version'] != VERSION:
                         self._error(f'No upgrade path for answer format {version} -> {VERSION}.')
 
@@ -372,6 +376,12 @@ class FrameQuestionAnswers:
                     #     }
                     # }
                 },
+            }
+
+        image_info = ret['meta'].get('image', None)
+        if not image_info:
+            ret['meta']['image'] = {
+                'path': str(Path(image_path).absolute().relative_to(self.root_path.absolute()))
             }
 
         return ret

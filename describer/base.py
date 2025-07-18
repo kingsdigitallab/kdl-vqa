@@ -75,6 +75,13 @@ class ImageDescriber:
         timer = getattr(self, 'timer')
         if timer:
             timer.step(message)
+    
+    def log_fatal(self, message):
+        message = f'ERROR: {message}'
+        self.log(message)
+        
+        print(message)
+        exit(1)
 
     def get_model(self):
         if not self.model:

@@ -3,11 +3,6 @@ message: "If you use this software, please cite it as below."
 title: BVQA
 authors:
 abstract: BVQA is a python command line tool that lets you ask a series of predefined questions to a vision language model (VLM) about a collection of images. It saves the answers in json files (one file per image).
-
-Main use cases:
-1. efficient extraction of semantic features from a large collection of images; 
-2. model selection: objectively compare the performance (quality of responses, resource utilisation, speed) of different models on the same questions and images.
-
 repository-code: "https://github.com/kingsdigitallab/kdl-vqa.git"
 version: 1.1.0
 license-url: "https://spdx.org/licenses/MIT"

@@ -1,11 +1,11 @@
 {
     "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
-    "type": "SoftwareSourceCode",
+    "@type": "SoftwareSourceCode",
     "applicationCategory": "Computer Vision",
     "author": [
         {
-            "id": "https://orcid.org/0000-0003-4284-8432",
-            "type": "Person",
+            "@id": "https://orcid.org/0000-0003-4284-8432",
+            "@type": "Person",
             "affiliation": {
                 "type": "Organization",
                 "name": "King's Digital Lab, King's College London"
@@ -18,8 +18,8 @@
     "codeRepository": "https://github.com/kingsdigitallab/kdl-vqa.git",
     "contributor": [
         {
-            "id": "https://orcid.org/0000-0002-9877-7496",
-            "type": "Person",
+            "@id": "https://orcid.org/0000-0002-9877-7496",
+            "@type": "Person",
             "affiliation": {
                 "type": "Organization",
                 "name": "Department of Digital Humanities, King's College London"
@@ -29,8 +29,8 @@
             "givenName": "Daniel"
         },
         {
-            "id": "https://orcid.org/0000-0002-8255-9937",
-            "type": "Person",
+            "@id": "https://orcid.org/0000-0002-8255-9937",
+            "@type": "Person",
             "affiliation": {
                 "type": "Organization",
                 "name": "King's Digital Lab, King's College London"

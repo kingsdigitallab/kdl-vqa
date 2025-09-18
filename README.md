@@ -2,7 +2,7 @@
 
 BVQA is a python command line tool that lets you ask
 a series of predefined questions
-to a visual language model (VLM) about a collection of images.
+to a vision language model (VLM) about a collection of images.
 It saves the answers in json files (one file per image).
 
 In this tool, a **describer** is a backend for a family of vision language models.
@@ -41,7 +41,7 @@ Some models (e.g. Qwen VL 2.5) may require more recent generation of GPUs to pro
 
 BVQA has a `build` action to create a python virtual environment and install all dependencies automatically.
 
-The first time the script runs it will download the visual language model that answers the questions.
+The first time the script runs it will download the vision language model that answers the questions.
 Currently, this is [moondream2](https://github.com/vikhyat/moondream) because it's light, fast & performs generally well and is well maintained.
 
 ## Usage

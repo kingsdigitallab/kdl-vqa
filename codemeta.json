@@ -1,0 +1,68 @@
+{
+    "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+    "type": "SoftwareSourceCode",
+    "applicationCategory": "Computer Vision",
+    "author": [
+        {
+            "id": "https://orcid.org/0000-0003-4284-8432",
+            "type": "Person",
+            "affiliation": {
+                "type": "Organization",
+                "name": "King's Digital Lab, King's College London"
+            },
+            "email": "geoffroy.noel@kcl.ac.uk",
+            "familyName": "Noël",
+            "givenName": "Geoffroy"
+        }
+    ],
+    "codeRepository": "https://github.com/kingsdigitallab/kdl-vqa.git",
+    "contributor": [
+        {
+            "id": "https://orcid.org/0000-0002-9877-7496",
+            "type": "Person",
+            "affiliation": {
+                "type": "Organization",
+                "name": "Department of Digital Humanities, King's College London"
+            },
+            "email": "daniel.chavez@kcl.ac.uk",
+            "familyName": "Chávez Heras",
+            "givenName": "Daniel"
+        },
+        {
+            "id": "https://orcid.org/0000-0002-8255-9937",
+            "type": "Person",
+            "affiliation": {
+                "type": "Organization",
+                "name": "King's Digital Lab, King's College London"
+            },
+            "email": "mary.chester-kadwell@kcl.ac.uk",
+            "familyName": "Chester-Kadwell",
+            "givenName": "Mary"
+        }
+    ],
+    "dateCreated": "2024-10-01",
+    "dateModified": "2025-06-18",
+    "datePublished": "2024-10-01",
+    "description": "BVQA is a python command line tool that lets you ask a series of predefined questions to a vision language model (VLM) about a collection of images. It saves the answers in json files (one file per image).\n\nMain use cases:\n1. efficient extraction of semantic features from a large collection of images; \n2. model selection: objectively compare the performance (quality of responses, resource utilisation, speed) of different models on the same questions and images.\n",
+    "downloadUrl": "https://github.com/kingsdigitallab/kdl-vqa/archive/refs/tags/v1.1.0.tar.gz",
+    "funder": {
+        "type": "Organization",
+        "name": "King's College London"
+    },
+    "keywords": [
+        "visual-question-answering",
+        "vision-language-model"
+    ],
+    "license": "https://spdx.org/licenses/MIT",
+    "name": "BVQA",
+    "operatingSystem": "Linux",
+    "programmingLanguage": [
+        "Python 3",
+        "HTML",
+        "bash"
+    ],
+    "softwareRequirements": "https://github.com/kingsdigitallab/kdl-vqa/tree/main/requirements",
+    "version": "1.1.0",
+    "developmentStatus": "active",
+    "issueTracker": "https://github.com/kingsdigitallab/kdl-vqa/issues"
+}

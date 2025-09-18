@@ -2,8 +2,12 @@ cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 title: BVQA
 authors:
+  - family-names: Noël
+    given-names: Geoffroy
+    orcid: https://orcid.org/0000-0003-4284-8432
 abstract: BVQA is a python command line tool that lets you ask a series of predefined questions to a vision language model (VLM) about a collection of images. It saves the answers in json files (one file per image).
 repository-code: "https://github.com/kingsdigitallab/kdl-vqa.git"
+type: software
 version: 1.1.0
 license-url: "https://spdx.org/licenses/MIT"
 keywords:
